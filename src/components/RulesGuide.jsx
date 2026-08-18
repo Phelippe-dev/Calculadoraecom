@@ -32,18 +32,32 @@ export default function RulesGuide() {
       {guideTab === 'ml' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {/* Card Destaque Atualização 24/08/2026 */}
-          <div className="card" style={{ border: '1px solid #f59e0b', background: 'rgba(245, 158, 11, 0.07)', borderRadius: 'var(--radius-md)' }}>
-            <h3 style={{ color: '#f59e0b', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <AlertTriangle size={20} /> 🚨 Atualização de Taxas &amp; Logística Mercado Livre (Vigência 24/08/2026)
+          <div className="card" style={{ border: '1px solid rgba(245, 158, 11, 0.35)', background: 'rgba(245, 158, 11, 0.04)', borderRadius: 'var(--radius-md)' }}>
+            <h3 style={{ color: '#f59e0b', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem' }}>
+              <AlertTriangle size={18} /> Atualização Mercado Livre (Vigência 24/08/2026)
             </h3>
-            <div style={{ fontSize: '0.86rem', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <p>• <strong>Reajuste de Frete (Mercado Envios):</strong> Atualização na tabela oficial para pacotes acima e abaixo de R$ 19,00. O frete agora varia com base no peso real, cubagem (dimensões da embalagem) e distância da entrega.</p>
-              <p>• <strong>Envios Flex Dinâmico:</strong> Fim da tarifa/bônus fixo único. O custo do Flex passa a ser calculado individualmente considerando tamanho da caixa, peso e raio de distância.</p>
-              <p>• <strong>Reajuste no Mercado Envios Full:</strong> Novas tabelas de armazenagem diária, coletas e regras mais rígidas para produtos sem conformidade de estoque.</p>
-              <p>• <strong>Tarifa Fixa Variável (&lt; R$ 79,00):</strong> Consolidação da cobrança operacional proporcional à cubagem em substituição à taxa fixa padrão por unidade.</p>
-              <p style={{ marginTop: '0.2rem', color: '#f59e0b', fontWeight: 600 }}>
-                📌 <strong>Ação Recomendada:</strong> Revise as dimensões (A x L x C) e o peso cadastrado de todos os seus SKUs no painel do Mercado Livre para evitar acréscimos indevidos por estimativa de cubagem.
-              </p>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', fontSize: '0.84rem' }}>
+              <div style={{ padding: '0.7rem', background: 'var(--bg-input)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>📦 Frete &amp; Envio Base</strong>
+                <span style={{ color: 'var(--text-secondary)' }}>Tabela atualizada por peso, cubagem e distância para itens acima e abaixo de R$ 19.</span>
+              </div>
+              <div style={{ padding: '0.7rem', background: 'var(--bg-input)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>🚚 Envios Flex Dinâmico</strong>
+                <span style={{ color: 'var(--text-secondary)' }}>Fim do valor único. Custo calculado por peso, tamanho do pacote e raio de envio.</span>
+              </div>
+              <div style={{ padding: '0.7rem', background: 'var(--bg-input)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>🏭 Mercado Envios Full</strong>
+                <span style={{ color: 'var(--text-secondary)' }}>Reajuste na armazenagem diária, coletas e cobrança por estoque não conforme.</span>
+              </div>
+              <div style={{ padding: '0.7rem', background: 'var(--bg-input)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>💡 Tarifa Fixa (&lt; R$ 79)</strong>
+                <span style={{ color: 'var(--text-secondary)' }}>Custo operacional variável proporcional à cubagem do produto.</span>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '0.75rem', padding: '0.5rem 0.75rem', background: 'rgba(245, 158, 11, 0.08)', borderRadius: 'var(--radius-sm)', borderLeft: '3px solid #f59e0b', fontSize: '0.8rem', color: 'var(--text-primary)' }}>
+              📌 <strong>Dica:</strong> Revise as medidas (A x L x C) e o peso no painel do Mercado Livre para evitar estimativas de cubagem mais caras.
             </div>
           </div>
 
