@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "gravitycalculadora"
+  },
+  "targets": {
+    "gravitycalculadora": {
+      "hosting": {
+        "gravitycalculadoraecom": [
+          "gravitycalculadoraecom"
+        ]
+      }
+    }
+  }
+}
