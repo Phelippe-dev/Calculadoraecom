@@ -30,34 +30,19 @@ export default function RulesGuide() {
       </div>
 
       {guideTab === 'ml' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          {/* Card Destaque Atualização 24/08/2026 */}
-          <div className="card" style={{ border: '1px solid rgba(245, 158, 11, 0.35)', background: 'rgba(245, 158, 11, 0.04)', borderRadius: 'var(--radius-md)' }}>
-            <h3 style={{ color: '#f59e0b', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>          {/* Card Destaque Atualização 24/08/2026 */}
+          <div className="card" style={{ borderLeft: '4px solid #f59e0b', background: 'rgba(245, 158, 11, 0.05)' }}>
+            <h3 style={{ color: '#f59e0b', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <AlertTriangle size={18} /> Atualização Mercado Livre (Vigência 24/08/2026)
             </h3>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', fontSize: '0.84rem' }}>
-              <div style={{ padding: '0.7rem', background: 'var(--bg-input)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
-                <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>📦 Frete &amp; Envio Base</strong>
-                <span style={{ color: 'var(--text-secondary)' }}>Tabela atualizada por peso, cubagem e distância para itens acima e abaixo de R$ 19.</span>
-              </div>
-              <div style={{ padding: '0.7rem', background: 'var(--bg-input)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
-                <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>🚚 Envios Flex Dinâmico</strong>
-                <span style={{ color: 'var(--text-secondary)' }}>Fim do valor único. Custo calculado por peso, tamanho do pacote e raio de envio.</span>
-              </div>
-              <div style={{ padding: '0.7rem', background: 'var(--bg-input)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
-                <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>🏭 Mercado Envios Full</strong>
-                <span style={{ color: 'var(--text-secondary)' }}>Reajuste na armazenagem diária, coletas e cobrança por estoque não conforme.</span>
-              </div>
-              <div style={{ padding: '0.7rem', background: 'var(--bg-input)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
-                <strong style={{ color: 'var(--text-primary)', display: 'block', marginBottom: '0.25rem' }}>💡 Tarifa Fixa (&lt; R$ 79)</strong>
-                <span style={{ color: 'var(--text-secondary)' }}>Custo operacional variável proporcional à cubagem do produto.</span>
-              </div>
-            </div>
-
-            <div style={{ marginTop: '0.75rem', padding: '0.5rem 0.75rem', background: 'rgba(245, 158, 11, 0.08)', borderRadius: 'var(--radius-sm)', borderLeft: '3px solid #f59e0b', fontSize: '0.8rem', color: 'var(--text-primary)' }}>
-              📌 <strong>Dica:</strong> Revise as medidas (A x L x C) e o peso no painel do Mercado Livre para evitar estimativas de cubagem mais caras.
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              <p>• <strong>Frete Mercado Envios:</strong> Nova tabela por peso real, cubagem (dimensões) e distância para itens acima e abaixo de R$ 19.</p>
+              <p>• <strong>Envios Flex Dinâmico:</strong> Custo e bonificação calculados por peso, volume da embalagem e raio de entrega.</p>
+              <p>• <strong>Mercado Envios Full:</strong> Reajuste na armazenagem diária, coletas e cobrança por estoque sem conformidade.</p>
+              <p>• <strong>Tarifa Fixa (&lt; R$ 79):</strong> Cobrança operacional dinâmica proporcional à cubagem do produto.</p>
+              <p style={{ marginTop: '0.2rem', color: '#f59e0b', fontWeight: 600 }}>
+                📌 <strong>Ação:</strong> Atualize as medidas (A x L x C) e o peso no painel para evitar fretes inflados por estimativa de cubagem.
+              </p>
             </div>
           </div>
 
@@ -65,12 +50,12 @@ export default function RulesGuide() {
             <h3 style={{ color: 'var(--ml-yellow)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Zap size={18} /> Regras Oficiais Mercado Livre 2026
             </h3>
-            <div style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <p>• <strong>Anúncios Clássicos vs. Premium:</strong> Os anúncios Clássicos cobram de 10% a 14% dependendo da categoria, sem parcelamento sem juros. Os anúncios Premium cobram de 15% a 19% e permitem parcelamento em até 12x sem juros (custo financeiro ~2.8%).</p>
-              <p>• <strong>Produtos abaixo de R$ 79,00:</strong> Isentos do custo total do Frete Grátis, porém é cobrada a tarifa fixa de gestão logística proporcional ao peso (32% do valor da tabela base de frete).</p>
-              <p>• <strong>Produtos a partir de R$ 79,00:</strong> O vendedor é OBRIGADO a oferecer Frete Grátis. O custo do frete recebe desconto progressivo conforme o nível de reputação do vendedor (até 70% Off para Platinum/Gold).</p>
-              <p>• <strong>Desconto Fulfillment Full:</strong> Vendedores que utilizam os centros de distribuição Mercado Envios Full ganham 8% de desconto adicional no custo do frete grátis.</p>
-              <p>• <strong>Programa de Afiliados Mercado Livre:</strong> Vendas originadas por afiliados parceiros possuem comissão adicional de 3% a 7% negociada na plataforma de parceiros ML.</p>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+              <p>• <strong>Clássico vs. Premium:</strong> Clássico (10% a 14% de comissão). Premium (15% a 19% com parcelamento em até 12x sem juros).</p>
+              <p>• <strong>Produtos &lt; R$ 79,00:</strong> Sem frete grátis obrigatório. Taxa de gestão logística de 32% sobre o frete base.</p>
+              <p>• <strong>Produtos &ge; R$ 79,00:</strong> Frete grátis obrigatório ao comprador, com desconto de até 70% conforme a reputação do vendedor.</p>
+              <p>• <strong>Desconto Full:</strong> Vendedores no Mercado Envios Full recebem 8% de desconto extra no custo do frete grátis.</p>
+              <p>• <strong>Programa de Afiliados:</strong> Comissão adicional de 3% a 7% para vendas via parceiros afiliados.</p>
             </div>
           </div>
 
