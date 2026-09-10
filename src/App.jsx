@@ -12,7 +12,7 @@ export default function App() {
     try {
       const stored = localStorage.getItem('gravity_simulations');
       return stored ? JSON.parse(stored) : [];
-    } catch (e) {
+    } catch {
       return [];
     }
   });

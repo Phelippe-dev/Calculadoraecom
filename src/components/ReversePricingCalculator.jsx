@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Target, Zap, ShoppingBag, Video, DollarSign, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Target, Zap, ShoppingBag, Video } from 'lucide-react';
 import FormattedInput from './FormattedInput';
-import { SHOPEE_FAIXAS, ML_CATEGORIAS, ML_FRETE_BASE, ML_REPUTACAO, parseBRL, formatBRL, formatPct } from './PricingCalculator';
+import { SHOPEE_FAIXAS, parseBRL, formatBRL } from './PricingCalculator';
 
 export default function ReversePricingCalculator() {
   const [calcMode, setCalcMode] = useState('margin'); // 'margin' or 'profit'

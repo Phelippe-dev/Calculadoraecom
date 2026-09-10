@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator, TrendingUp, AlertTriangle, CheckCircle, Info, Zap, ShoppingBag, Video, Bookmark } from 'lucide-react';
+import { Calculator, TrendingUp, Zap, ShoppingBag, Video, Bookmark } from 'lucide-react';
 import FormattedInput from './FormattedInput';
 
 // ============================================================
@@ -46,7 +46,7 @@ export const SHOPEE_FAIXAS = [
     label: 'Acima de R$ 500,00',
     min: 500, max: Infinity,
     comissao: 14.0,
-    taxaFixa: 26.00,
+    taxaFixa: 28.00,
     subsidioFrete: 40.00,
     descFrete: 'Subsídio oficial de Frete Grátis de até R$ 40,00',
     subsidioPixPct: 8.0,

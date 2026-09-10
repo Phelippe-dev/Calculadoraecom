@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Award, Zap, ShoppingBag, Video, DollarSign, AlertTriangle } from 'lucide-react';
 import FormattedInput from './FormattedInput';
-import { SHOPEE_FAIXAS, parseBRL, formatBRL, formatPct } from './PricingCalculator';
+import { SHOPEE_FAIXAS, parseBRL, formatBRL, formatPct, ML_CATEGORIAS } from './PricingCalculator';
 
 export default function MarketplaceComparator() {
   // Inicializados totalmente limpos
@@ -9,6 +9,10 @@ export default function MarketplaceComparator() {
   const [precoVenda, setPrecoVenda] = useState('');
   const [embalagem, setEmbalagem] = useState('');
   const [imposto, setImposto] = useState('');
+  
+  // Mercado Livre state
+  const [mlCategoria, setMlCategoria] = useState(0);
+  const [mlTipoAnuncio, setMlTipoAnuncio] = useState('premium');
 
   const numPreco = parseBRL(precoVenda);
   const numCusto = parseBRL(custoProd);
@@ -17,7 +21,8 @@ export default function MarketplaceComparator() {
 
   // 1. Mercado Livre Calculation (Standard Premium, Verde Escuro, Full, 500g-1kg)
   const calcML = () => {
-    const pctComissao = 16.0; // Premium Geral
+    const cat = ML_CATEGORIAS[mlCategoria];
+    const pctComissao = mlTipoAnuncio === 'premium' ? cat.premium : cat.classico;
     const freteBase = 24.50; // 500g - 1kg
     const descFretePct = 40; // Verde escuro
 
@@ -170,6 +175,30 @@ export default function MarketplaceComparator() {
           <div className="form-group">
             <label>Imposto Simples (%)</label>
             <FormattedInput type="decimal" id="compImp" value={imposto} onChange={e => setImposto(e.target.value)} placeholder="Ex: 6,0" />
+          </div>
+        </div>
+      </div>
+
+      {/* Configurações Específicas do Mercado Livre */}
+      <div className="card" style={{ marginBottom: '1.25rem' }}>
+        <div className="card-header">
+          <h3><Zap size={16} style={{ verticalAlign: 'middle', marginRight: 6, color: 'var(--ml-yellow)' }} />Configuração da Categoria - Mercado Livre</h3>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem' }}>
+          <div className="form-group">
+            <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.4rem', display: 'block' }}>Categoria do Produto</label>
+            <select style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'var(--bg-input)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)', fontSize: '0.9rem' }} value={mlCategoria} onChange={e => setMlCategoria(Number(e.target.value))}>
+              {ML_CATEGORIAS.map((c, i) => (
+                <option key={i} value={i}>{c.label} ({c.classico}% / {c.premium}%)</option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.4rem', display: 'block' }}>Tipo de Anúncio</label>
+            <select style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'var(--bg-input)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)', fontSize: '0.9rem' }} value={mlTipoAnuncio} onChange={e => setMlTipoAnuncio(e.target.value)}>
+              <option value="classico">Clássico</option>
+              <option value="premium">Premium</option>
+            </select>
           </div>
         </div>
       </div>

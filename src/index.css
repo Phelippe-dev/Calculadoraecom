@@ -11,9 +11,9 @@
   --border-active: rgba(255, 255, 255, 0.2);
 
   /* Typography */
-  --text-primary: #F9FAFB;
-  --text-secondary: #9CA3AF;
-  --text-muted: #6B7280;
+  --text-primary: #FFFFFF;
+  --text-secondary: #E5E7EB;
+  --text-muted: #9CA3AF;
 
   /* Universal Status Colors */
   --success: #10B981;

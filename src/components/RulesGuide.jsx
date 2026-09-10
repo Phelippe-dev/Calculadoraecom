@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, Zap, ShoppingBag, Video, Info, CheckCircle2, ShieldCheck, AlertCircle, Truck, Percent, Award, AlertTriangle, Users } from 'lucide-react';
+import { Zap, ShoppingBag, Video, Info, Truck, Users } from 'lucide-react';
 import { ML_CATEGORIAS, ML_FRETE_BASE, ML_REPUTACAO, SHOPEE_FAIXAS, formatBRL } from './PricingCalculator';
 
 export default function RulesGuide() {
@@ -30,18 +30,19 @@ export default function RulesGuide() {
       </div>
 
       {guideTab === 'ml' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>          {/* Card Destaque Atualização 24/08/2026 */}
-          <div className="card" style={{ borderLeft: '4px solid #f59e0b', background: 'rgba(245, 158, 11, 0.05)' }}>
-            <h3 style={{ color: '#f59e0b', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <AlertTriangle size={18} /> Atualização Mercado Livre (Vigência 24/08/2026)
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {/* Regras de Logística Atualizadas */}
+          <div className="card" style={{ borderLeft: '4px solid var(--ml-yellow)' }}>
+            <h3 style={{ color: 'var(--ml-yellow)', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Info size={18} /> Regras de Logística e Frete (Vigentes 2026)
             </h3>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-              <p>• <strong>Frete Mercado Envios:</strong> Nova tabela por peso real, cubagem (dimensões) e distância para itens acima e abaixo de R$ 19.</p>
-              <p>• <strong>Envios Flex Dinâmico:</strong> Custo e bonificação calculados por peso, volume da embalagem e raio de entrega.</p>
-              <p>• <strong>Mercado Envios Full:</strong> Reajuste na armazenagem diária, coletas e cobrança por estoque sem conformidade.</p>
-              <p>• <strong>Tarifa Fixa (&lt; R$ 79):</strong> Cobrança operacional dinâmica proporcional à cubagem do produto.</p>
-              <p style={{ marginTop: '0.2rem', color: '#f59e0b', fontWeight: 600 }}>
-                📌 <strong>Ação:</strong> Atualize as medidas (A x L x C) e o peso no painel para evitar fretes inflados por estimativa de cubagem.
+            <div style={{ fontSize: '0.86rem', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <p>• <strong>Reajuste de Frete (Mercado Envios):</strong> Atualização na tabela oficial para pacotes acima e abaixo de R$ 19,00. O frete agora varia com base no peso real, cubagem (dimensões da embalagem) e distância da entrega.</p>
+              <p>• <strong>Envios Flex Dinâmico:</strong> Fim da tarifa/bônus fixo único. O custo do Flex passa a ser calculado individualmente considerando tamanho da caixa, peso e raio de distância.</p>
+              <p>• <strong>Reajuste no Mercado Envios Full:</strong> Novas tabelas de armazenagem diária, coletas e regras mais rígidas para produtos sem conformidade de estoque.</p>
+              <p>• <strong>Tarifa Fixa Variável (&lt; R$ 79,00):</strong> Consolidação da cobrança operacional proporcional à cubagem em substituição à taxa fixa padrão por unidade.</p>
+              <p style={{ marginTop: '0.2rem', color: 'var(--text-primary)', fontWeight: 600 }}>
+                📌 <strong>Ação Recomendada:</strong> Revise as dimensões (A x L x C) e o peso cadastrado de todos os seus SKUs no painel do Mercado Livre para evitar acréscimos indevidos por estimativa de cubagem.
               </p>
             </div>
           </div>
@@ -50,7 +51,7 @@ export default function RulesGuide() {
             <h3 style={{ color: 'var(--ml-yellow)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Zap size={18} /> Regras Oficiais Mercado Livre 2026
             </h3>
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+            <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
               <p>• <strong>Clássico vs. Premium:</strong> Clássico (10% a 14% de comissão). Premium (15% a 19% com parcelamento em até 12x sem juros).</p>
               <p>• <strong>Produtos &lt; R$ 79,00:</strong> Sem frete grátis obrigatório. Taxa de gestão logística de 32% sobre o frete base.</p>
               <p>• <strong>Produtos &ge; R$ 79,00:</strong> Frete grátis obrigatório ao comprador, com desconto de até 70% conforme a reputação do vendedor.</p>
@@ -132,7 +133,7 @@ export default function RulesGuide() {
               {ML_REPUTACAO.map((rep, idx) => (
                 <div key={idx} style={{ padding: '0.75rem', background: 'var(--bg-input)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
                   <div style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--ml-yellow)' }}>{rep.label}</div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-primary)', marginTop: '0.2rem' }}>
                     Desconto no frete grátis: {rep.descPct}%
                   </div>
                 </div>
@@ -148,7 +149,7 @@ export default function RulesGuide() {
             <h3 style={{ color: 'var(--shopee-orange)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <ShoppingBag size={18} /> Regras Oficiais Shopee Brasil 2026
             </h3>
-            <div style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div style={{ fontSize: '0.88rem', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               <p>• <strong>Comissão Escalonada por Faixa:</strong> A comissão é dividida em faixas de preço final do produto. Itens até R$79,99 possuem comissão de 20% + R$4,00 de taxa fixa. Itens a partir de R$80,00 cobram 14% de comissão base com taxas fixas progressivas.</p>
               <p>• <strong>🔥 Nova Atualização de Afiliados Shopee 2026:</strong> Vendedores que ativam o Programa Oficial de Afiliados Shopee configuram comissão adicional entre <strong>2,5% e 10,0%</strong> para divulgadores parceiros. A Shopee aplica um <strong>teto máximo de cobrança por item de R$ 20,00</strong> por venda convertida por afiliado.</p>
               <p>• <strong>Programa de Frete Grátis Obrigatório:</strong> Todas as contas participantes do programa de Frete Grátis já possuem o cupom de frete embutido de até R$ 20, R$ 30 ou R$ 40 dependendo do valor.</p>
@@ -188,7 +189,7 @@ export default function RulesGuide() {
                       <td style={{ padding: '0.6rem', fontWeight: 700, color: 'var(--shopee-orange)' }}>{faixa.label}</td>
                       <td style={{ padding: '0.6rem' }}>{faixa.comissao}%</td>
                       <td style={{ padding: '0.6rem', fontWeight: 600 }}>{formatBRL(faixa.taxaFixa)}</td>
-                      <td style={{ padding: '0.6rem', color: 'var(--text-secondary)' }}>Até {formatBRL(faixa.subsidioFrete)}</td>
+                      <td style={{ padding: '0.6rem', color: 'var(--text-primary)' }}>Até {formatBRL(faixa.subsidioFrete)}</td>
                       <td style={{ padding: '0.6rem', color: 'var(--success)' }}>{faixa.subsidioPixPct ? `${faixa.subsidioPixPct}%` : 'N/A'}</td>
                     </tr>
                   ))}
@@ -205,7 +206,7 @@ export default function RulesGuide() {
             <h3 style={{ color: 'var(--tiktok-cyan)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <Video size={18} /> Guia Completo de Regras &amp; Taxas TikTok Shop 2026
             </h3>
-            <div style={{ fontSize: '0.88rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+            <div style={{ fontSize: '0.88rem', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
               <p>• <strong>Comissão Base Escalonada por Preço:</strong> Produtos com preço final menor que <strong>R$ 50,00</strong> possuem comissão base de <strong>10% + R$ 4,00</strong> de tarifa fixa. Produtos a partir de <strong>R$ 50,00</strong> possuem comissão reduzida para <strong>6% + R$ 6,00</strong> por unidade vendida.</p>
               <p>• <strong>Programa de Frete Grátis Coparticipado (TikTok Shipping):</strong> Taxa de <strong>6%</strong> sobre o valor do produto, com teto máximo cobrado de <strong>R$ 50,00 por item</strong>.</p>
               <p>• <strong>Taxa de Processamento de Pagamento (Gateway TikTok):</strong> Cobrança de <strong>2,0%</strong> sobre o total do pedido referente à liquidação de cartão, PIX e boleto.</p>
@@ -234,32 +235,32 @@ export default function RulesGuide() {
                   <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                     <td style={{ padding: '0.6rem', fontWeight: 700, color: 'var(--tiktok-cyan)' }}>Comissão Base (&lt; R$ 50,00)</td>
                     <td style={{ padding: '0.6rem', fontWeight: 600 }}>10,0% + R$ 4,00 / item</td>
-                    <td style={{ padding: '0.6rem', color: 'var(--text-secondary)' }}>Aplicada automaticamente em itens abaixo de R$ 50,00</td>
+                    <td style={{ padding: '0.6rem', color: 'var(--text-primary)' }}>Aplicada automaticamente em itens abaixo de R$ 50,00</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                     <td style={{ padding: '0.6rem', fontWeight: 700, color: 'var(--tiktok-cyan)' }}>Comissão Base (&gt;= R$ 50,00)</td>
                     <td style={{ padding: '0.6rem', fontWeight: 600 }}>6,0% + R$ 6,00 / item</td>
-                    <td style={{ padding: '0.6rem', color: 'var(--text-secondary)' }}>Alíquota com desconto para itens a partir de R$ 50,00</td>
+                    <td style={{ padding: '0.6rem', color: 'var(--text-primary)' }}>Alíquota com desconto para itens a partir de R$ 50,00</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                     <td style={{ padding: '0.6rem', fontWeight: 700, color: 'var(--tiktok-cyan)' }}>Frete Grátis Coparticipado</td>
                     <td style={{ padding: '0.6rem', fontWeight: 600 }}>6,0% (Teto R$ 50,00)</td>
-                    <td style={{ padding: '0.6rem', color: 'var(--text-secondary)' }}>Garante frete grátis aos compradores na plataforma</td>
+                    <td style={{ padding: '0.6rem', color: 'var(--text-primary)' }}>Garante frete grátis aos compradores na plataforma</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                     <td style={{ padding: '0.6rem', fontWeight: 700, color: 'var(--tiktok-cyan)' }}>Processamento Financeiro</td>
                     <td style={{ padding: '0.6rem', fontWeight: 600 }}>2,0% por pedido</td>
-                    <td style={{ padding: '0.6rem', color: 'var(--text-secondary)' }}>Taxa administrativa de recebimento (Cartão, PIX, Boleto)</td>
+                    <td style={{ padding: '0.6rem', color: 'var(--text-primary)' }}>Taxa administrativa de recebimento (Cartão, PIX, Boleto)</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                     <td style={{ padding: '0.6rem', fontWeight: 700, color: 'var(--success)' }}>Isenção Conta Nova</td>
                     <td style={{ padding: '0.6rem', fontWeight: 700, color: 'var(--success)' }}>0,0% nos primeiros 60 dias</td>
-                    <td style={{ padding: '0.6rem', color: 'var(--text-secondary)' }}>Isenção total da comissão base para novos vendedores</td>
+                    <td style={{ padding: '0.6rem', color: 'var(--text-primary)' }}>Isenção total da comissão base para novos vendedores</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                     <td style={{ padding: '0.6rem', fontWeight: 700, color: 'var(--tiktok-cyan)' }}>Intermediação de Afiliados</td>
                     <td style={{ padding: '0.6rem', fontWeight: 600 }}>1,5% da comissão do criador</td>
-                    <td style={{ padding: '0.6rem', color: 'var(--text-secondary)' }}>Taxa da plataforma TikTok Creator Store sobre vendas via afiliados</td>
+                    <td style={{ padding: '0.6rem', color: 'var(--text-primary)' }}>Taxa da plataforma TikTok Creator Store sobre vendas via afiliados</td>
                   </tr>
                 </tbody>
               </table>
