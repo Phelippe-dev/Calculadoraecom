@@ -6,6 +6,104 @@ import {
 import FormattedInput from './FormattedInput';
 import { parseBRL, formatBRL, formatPct } from './PricingCalculator';
 
+function StatusBadge({ proj }) {
+  if (!proj.meta || proj.meta === 0) return null;
+  if (proj.fat >= proj.meta) {
+    return (
+      <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.15)', color: 'var(--success)', fontWeight: 700, border: '1px solid rgba(16, 185, 129, 0.3)' }}>
+        🏆 Meta Batida!
+      </span>
+    );
+  }
+  if (proj.diferencaRitmo >= 0) {
+    return (
+      <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', borderRadius: '4px', background: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA', fontWeight: 700, border: '1px solid rgba(59, 130, 246, 0.3)' }}>
+        🚀 No Ritmo (+{formatBRL(proj.diferencaRitmo)}/dia)
+      </span>
+    );
+  }
+  return (
+    <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', borderRadius: '4px', background: 'rgba(239, 68, 68, 0.15)', color: 'var(--danger)', fontWeight: 700, border: '1px solid rgba(239, 68, 68, 0.3)' }}>
+      ⚠️ Acelerar (-{formatBRL(Math.abs(proj.diferencaRitmo))}/dia)
+    </span>
+  );
+}
+
+function MarketplaceCard({
+  title,
+  icon,
+  color,
+  accentBg,
+  proj,
+  setFat,
+  setMargem,
+  setMeta,
+  fatStr,
+  margemStr,
+  metaStr,
+  diasRestantes
+}) {
+  return (
+    <div style={{ border: `1px solid ${color}40`, borderRadius: 'var(--radius-md)', padding: '1rem', background: accentBg, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+      <div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: color, fontWeight: 700 }}>
+            {icon} {title}
+          </div>
+          <StatusBadge proj={proj} />
+        </div>
+        
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.6rem', marginBottom: '1rem' }}>
+          <div>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.2rem', display: 'block' }}>Faturado Até Hoje (R$)</label>
+            <FormattedInput type="currency" value={fatStr} onChange={e => setFat(e.target.value)} placeholder="0,00" />
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
+            <div>
+              <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.2rem', display: 'block' }}>Margem Média (%)</label>
+              <FormattedInput type="decimal" value={margemStr} onChange={e => setMargem(e.target.value)} placeholder="0,0" />
+            </div>
+            <div>
+              <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.2rem', display: 'block' }}>Meta Mensal (R$)</label>
+              <FormattedInput type="currency" value={metaStr} onChange={e => setMeta(e.target.value)} placeholder="Opcional" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style={{ background: 'rgba(0,0,0,0.2)', padding: '0.85rem', borderRadius: 'var(--radius-sm)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.2rem' }}>
+          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Projeção Final</span>
+          {proj.meta > 0 && (
+            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: proj.atingimentoMeta >= 100 ? 'var(--success)' : 'var(--warning)' }}>
+              {proj.atingimentoMeta.toFixed(1)}% da Meta
+            </span>
+          )}
+        </div>
+        
+        <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.4rem' }}>
+          {formatBRL(proj.projecaoFinal)}
+        </div>
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', paddingTop: '0.4rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+          <span style={{ color: 'var(--text-secondary)' }}>Lucro Projetado:</span>
+          <strong style={{ color: 'var(--success)' }}>{formatBRL(proj.lucroFinal)}</strong>
+        </div>
+
+        {/* Ritmo Diário */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
+          <span>Ritmo Atual: {formatBRL(proj.mediaPassada)}/dia</span>
+          {proj.meta > 0 && diasRestantes > 0 && proj.faltaParaMeta > 0 && (
+            <span style={{ color: proj.diferencaRitmo >= 0 ? '#60A5FA' : 'var(--danger)' }}>
+              Precisa: {formatBRL(proj.ritmoNecessario)}/dia
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function MonthlyGoalCalculator({ onSaveSimulation }) {
   // Configurações Globais (Tempo e Sazonalidade)
   const [diaAtual, setDiaAtual] = useState('');
@@ -164,89 +262,6 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
     document.body.removeChild(link);
   };
 
-  const renderStatusBadge = (proj) => {
-    if (!proj.meta || proj.meta === 0) return null;
-    if (proj.fat >= proj.meta) {
-      return (
-        <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', borderRadius: '4px', background: 'rgba(16, 185, 129, 0.15)', color: 'var(--success)', fontWeight: 700, border: '1px solid rgba(16, 185, 129, 0.3)' }}>
-          🏆 Meta Batida!
-        </span>
-      );
-    }
-    if (proj.diferencaRitmo >= 0) {
-      return (
-        <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', borderRadius: '4px', background: 'rgba(59, 130, 246, 0.15)', color: '#60A5FA', fontWeight: 700, border: '1px solid rgba(59, 130, 246, 0.3)' }}>
-          🚀 No Ritmo (+{formatBRL(proj.diferencaRitmo)}/dia)
-        </span>
-      );
-    }
-    return (
-      <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', borderRadius: '4px', background: 'rgba(239, 68, 68, 0.15)', color: 'var(--danger)', fontWeight: 700, border: '1px solid rgba(239, 68, 68, 0.3)' }}>
-        ⚠️ Acelerar (-{formatBRL(Math.abs(proj.diferencaRitmo))}/dia)
-      </span>
-    );
-  };
-
-  const RenderMarketplaceCard = ({ title, icon, color, accentBg, proj, setFat, setMargem, setMeta, fatStr, margemStr, metaStr }) => (
-    <div style={{ border: `1px solid ${color}40`, borderRadius: 'var(--radius-md)', padding: '1rem', background: accentBg, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: color, fontWeight: 700 }}>
-            {icon} {title}
-          </div>
-          {renderStatusBadge(proj)}
-        </div>
-        
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.6rem', marginBottom: '1rem' }}>
-          <div>
-            <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.2rem', display: 'block' }}>Faturado Até Hoje (R$)</label>
-            <FormattedInput type="currency" value={fatStr} onChange={e => setFat(e.target.value)} placeholder="0,00" />
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
-            <div>
-              <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.2rem', display: 'block' }}>Margem Média (%)</label>
-              <FormattedInput type="decimal" value={margemStr} onChange={e => setMargem(e.target.value)} placeholder="0,0" />
-            </div>
-            <div>
-              <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.2rem', display: 'block' }}>Meta Mensal (R$)</label>
-              <FormattedInput type="currency" value={metaStr} onChange={e => setMeta(e.target.value)} placeholder="Opcional" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div style={{ background: 'rgba(0,0,0,0.2)', padding: '0.85rem', borderRadius: 'var(--radius-sm)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.2rem' }}>
-          <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Projeção Final</span>
-          {proj.meta > 0 && (
-            <span style={{ fontSize: '0.8rem', fontWeight: 700, color: proj.atingimentoMeta >= 100 ? 'var(--success)' : 'var(--warning)' }}>
-              {proj.atingimentoMeta.toFixed(1)}% da Meta
-            </span>
-          )}
-        </div>
-        
-        <div style={{ fontSize: '1.35rem', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '0.4rem' }}>
-          {formatBRL(proj.projecaoFinal)}
-        </div>
-
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', paddingTop: '0.4rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
-          <span style={{ color: 'var(--text-secondary)' }}>Lucro Projetado:</span>
-          <strong style={{ color: 'var(--success)' }}>{formatBRL(proj.lucroFinal)}</strong>
-        </div>
-
-        {/* Ritmo Diário */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.74rem', color: 'var(--text-muted)', marginTop: '0.3rem' }}>
-          <span>Ritmo Atual: {formatBRL(proj.mediaPassada)}/dia</span>
-          {proj.meta > 0 && diasRestantes > 0 && proj.faltaParaMeta > 0 && (
-            <span style={{ color: proj.diferencaRitmo >= 0 ? '#60A5FA' : 'var(--danger)' }}>
-              Precisa: {formatBRL(proj.ritmoNecessario)}/dia
-            </span>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-
   return (
     <div className="tab-panel">
       {/* Header Banner */}
@@ -342,20 +357,23 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
 
         {/* COLUNAS DE MARKETPLACES */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
-          <RenderMarketplaceCard 
+          <MarketplaceCard 
             title="Mercado Livre" icon={<Zap size={18} />} color="#FBBF24" accentBg="rgba(251, 191, 36, 0.05)"
             proj={projML} setFat={setFatML} setMargem={setMargemML} setMeta={setMetaML}
             fatStr={fatML} margemStr={margemML} metaStr={metaML}
+            diasRestantes={diasRestantes}
           />
-          <RenderMarketplaceCard 
+          <MarketplaceCard 
             title="Shopee" icon={<ShoppingBag size={18} />} color="#F97316" accentBg="rgba(249, 115, 22, 0.05)"
             proj={projShopee} setFat={setFatShopee} setMargem={setMargemShopee} setMeta={setMetaShopee}
             fatStr={fatShopee} margemStr={margemShopee} metaStr={metaShopee}
+            diasRestantes={diasRestantes}
           />
-          <RenderMarketplaceCard 
+          <MarketplaceCard 
             title="TikTok Shop" icon={<Video size={18} />} color="#06B6D4" accentBg="rgba(6, 182, 212, 0.05)"
             proj={projTikTok} setFat={setFatTikTok} setMargem={setMargemTikTok} setMeta={setMetaTikTok}
             fatStr={fatTikTok} margemStr={margemTikTok} metaStr={metaTikTok}
+            diasRestantes={diasRestantes}
           />
         </div>
 
