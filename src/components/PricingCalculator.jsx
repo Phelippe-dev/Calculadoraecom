@@ -11,7 +11,7 @@ export const SHOPEE_FAIXAS = [
     label: 'Até R$ 79,99',
     min: 0, max: 79.99,
     comissao: 20.0,    // inclui taxa de transação + frete grátis obrigatorio
-    taxaFixa: 4.00,
+    taxaFixa: 4.50,
     subsidioFrete: 20.00,
     descFrete: 'Subsídio oficial de Frete Grátis de até R$ 20,00',
   },

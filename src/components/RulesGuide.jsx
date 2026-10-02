@@ -150,7 +150,7 @@ export default function RulesGuide() {
               <ShoppingBag size={18} /> Regras Oficiais Shopee Brasil 2026
             </h3>
             <div style={{ fontSize: '0.88rem', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <p>• <strong>Comissão Escalonada por Faixa:</strong> A comissão é dividida em faixas de preço final do produto. Itens até R$79,99 possuem comissão de 20% + R$4,00 de taxa fixa. Itens a partir de R$80,00 cobram 14% de comissão base com taxas fixas progressivas.</p>
+              <p>• <strong>Comissão Escalonada por Faixa:</strong> A comissão é dividida em faixas de preço final do produto. Itens até R$79,99 possuem comissão de 20% + R$4,50 de taxa fixa. Itens a partir de R$80,00 cobram 14% de comissão base com taxas fixas progressivas.</p>
               <p>• <strong>🔥 Nova Atualização de Afiliados Shopee 2026:</strong> Vendedores que ativam o Programa Oficial de Afiliados Shopee configuram comissão adicional entre <strong>2,5% e 10,0%</strong> para divulgadores parceiros. A Shopee aplica um <strong>teto máximo de cobrança por item de R$ 20,00</strong> por venda convertida por afiliado.</p>
               <p>• <strong>Programa de Frete Grátis Obrigatório:</strong> Todas as contas participantes do programa de Frete Grátis já possuem o cupom de frete embutido de até R$ 20, R$ 30 ou R$ 40 dependendo do valor.</p>
               <p>• <strong>Subsídio Especial PIX:</strong> A Shopee concede subsídio de 5% a 8% nos custos de comissão para pedidos pagos via PIX nas faixas superiores.</p>
