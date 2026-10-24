@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Award, Zap, ShoppingBag, Video, DollarSign, AlertTriangle } from 'lucide-react';
+import { Award, Zap, ShoppingBag, Video, Package, Shirt, DollarSign, AlertTriangle } from 'lucide-react';
 import FormattedInput from './FormattedInput';
-import { SHOPEE_FAIXAS, parseBRL, formatBRL, formatPct, ML_CATEGORIAS } from './PricingCalculator';
+import { 
+  SHOPEE_FAIXAS, parseBRL, formatBRL, formatPct, 
+  ML_CATEGORIAS, AMAZON_CATEGORIAS, SHEIN_CATEGORIAS 
+} from './PricingCalculator';
 
 export default function MarketplaceComparator() {
   // Inicializados totalmente limpos
@@ -10,9 +13,11 @@ export default function MarketplaceComparator() {
   const [embalagem, setEmbalagem] = useState('');
   const [imposto, setImposto] = useState('');
   
-  // Mercado Livre state
+  // Categorias específicas
   const [mlCategoria, setMlCategoria] = useState(0);
   const [mlTipoAnuncio, setMlTipoAnuncio] = useState('premium');
+  const [amazonCategoria, setAmazonCategoria] = useState(0);
+  const [sheinCategoria, setSheinCategoria] = useState(0);
 
   const numPreco = parseBRL(precoVenda);
   const numCusto = parseBRL(custoProd);
@@ -21,7 +26,7 @@ export default function MarketplaceComparator() {
 
   // 1. Mercado Livre Calculation (Standard Premium, Verde Escuro, Full, 500g-1kg)
   const calcML = () => {
-    const cat = ML_CATEGORIAS[mlCategoria];
+    const cat = ML_CATEGORIAS[mlCategoria] || ML_CATEGORIAS[0];
     const pctComissao = mlTipoAnuncio === 'premium' ? cat.premium : cat.classico;
     const freteBase = 24.50; // 500g - 1kg
     const descFretePct = 40; // Verde escuro
@@ -63,6 +68,10 @@ export default function MarketplaceComparator() {
     const faixa = SHOPEE_FAIXAS.find(f => numPreco >= f.min && numPreco <= f.max) || SHOPEE_FAIXAS[0];
     let pctTotal = faixa.comissao;
     let taxaFixa = faixa.taxaFixa;
+
+    if (numPreco > 0 && numPreco < 8.99) {
+      taxaFixa = Math.min(faixa.taxaFixa, numPreco * 0.50);
+    }
 
     const valorComissao = (numPreco * pctTotal) / 100;
     const valorImposto = (numPreco * numImp) / 100;
@@ -116,9 +125,67 @@ export default function MarketplaceComparator() {
     };
   };
 
-  const results = [calcML(), calcShopee(), calcTikTok()];
+  // 4. Amazon Brasil Calculation (Plano Pro, DBA Logística 300g-500g)
+  const calcAmazon = () => {
+    const cat = AMAZON_CATEGORIAS[amazonCategoria] || AMAZON_CATEGORIAS[0];
+    const pctComissao = cat.comissao;
+    const freteDBA = 15.90; // Faixa padrão 300g a 500g
 
-  // Find winner (highest profit among ML, Shopee, TikTok)
+    const valorComissao = numPreco > 0 ? Math.max(1.00, (numPreco * pctComissao) / 100) : 0;
+    const valorImposto = (numPreco * numImp) / 100;
+    const totalCustos = valorComissao + freteDBA + valorImposto + numEmb + numCusto;
+    const lucro = numPreco > 0 ? numPreco - totalCustos : 0;
+    const margemPct = numPreco > 0 ? (lucro / numPreco) * 100 : 0;
+
+    return {
+      key: 'amazon',
+      name: 'Amazon Brasil',
+      badgeClass: 'badge-amazon',
+      accentColor: 'var(--amazon-orange)',
+      accentBg: 'var(--amazon-orange-bg)',
+      icon: <Package size={18} style={{ color: 'var(--amazon-orange)' }} />,
+      pctComissao,
+      taxasPlataforma: valorComissao + freteDBA,
+      valorImposto,
+      totalCustos,
+      lucro,
+      margemPct,
+      detalheTaxas: `${cat.label.slice(0, 24)}: ${pctComissao}% + Frete DBA ${formatBRL(freteDBA)}`
+    };
+  };
+
+  // 5. Shein Brasil Calculation (Envio Integrado 300g-500g, Sem taxa fixa)
+  const calcShein = () => {
+    const cat = SHEIN_CATEGORIAS[sheinCategoria] || SHEIN_CATEGORIAS[0];
+    const pctComissao = cat.comissao;
+    const freteShein = 13.90; // Faixa padrão 300g a 500g
+
+    const valorComissao = (numPreco * pctComissao) / 100;
+    const valorImposto = (numPreco * numImp) / 100;
+    const totalCustos = valorComissao + freteShein + valorImposto + numEmb + numCusto;
+    const lucro = numPreco > 0 ? numPreco - totalCustos : 0;
+    const margemPct = numPreco > 0 ? (lucro / numPreco) * 100 : 0;
+
+    return {
+      key: 'shein',
+      name: 'Shein Brasil',
+      badgeClass: 'badge-shein',
+      accentColor: 'var(--shein-pink)',
+      accentBg: 'var(--shein-pink-bg)',
+      icon: <Shirt size={18} style={{ color: 'var(--shein-pink)' }} />,
+      pctComissao,
+      taxasPlataforma: valorComissao + freteShein,
+      valorImposto,
+      totalCustos,
+      lucro,
+      margemPct,
+      detalheTaxas: `${cat.label}: ${pctComissao}% (Sem Taxa Fixa) + Frete ${formatBRL(freteShein)}`
+    };
+  };
+
+  const results = [calcML(), calcShopee(), calcTikTok(), calcAmazon(), calcShein()];
+
+  // Find winner (highest profit among all 5 marketplaces)
   const winner = results.reduce((max, curr) => curr.lucro > max.lucro ? curr : max, results[0]);
 
   return (
@@ -128,10 +195,10 @@ export default function MarketplaceComparator() {
         <div className="card-header flex-header">
           <div>
             <span className="badge badge-success">
-              MATRIZ COMPARATIVA DE MARGEM &amp; LUCRO LADO A LADO
+              MATRIZ COMPARATIVA DE MARGEM &amp; LUCRO LADO A LADO (5 MARKETPLACES)
             </span>
             <h2 style={{ marginTop: '0.4rem' }}>Comparador Multi-Marketplace Simultâneo</h2>
-            <p>Compare as margens reais entre Mercado Livre, Shopee e TikTok Shop para o mesmo produto.</p>
+            <p>Compare as margens reais entre Mercado Livre, Shopee, TikTok Shop, Amazon e Shein para o mesmo produto.</p>
           </div>
         </div>
       </div>
@@ -150,8 +217,8 @@ export default function MarketplaceComparator() {
         <div style={{ fontWeight: 700, color: 'var(--warning)', marginBottom: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
           <AlertTriangle size={15} /> AVISO IMPORTANTE SOBRE O COMPARATIVO:
         </div>
-        Este comparador analisa rigorosamente as <strong>comissões oficiais, tarifas fixas por item, fretes base e alíquota de imposto</strong> de cada plataforma. 
-        <strong> NÃO estão inclusos cupons patrocinados pelo vendedor nem orçamento de tráfego pago (Mercado Ads, Shopee Ads ou TikTok Ads)</strong>, pois estes investimentos de mídia dependem da estratégia individual de cada loja.
+        Este comparador analisa rigorosamente as <strong>comissões oficiais, tarifas fixas por item, fretes logísticos base (300g-500g) e alíquota de imposto</strong> de cada plataforma com as regras vigentes de 2026. 
+        <strong> NÃO estão inclusos cupons de desconto concedidos pelo vendedor nem orçamento de tráfego pago (Ads)</strong>, permitindo uma comparação limpa de viabilidade orgânica de cada marketplace.
       </div>
 
       {/* Inputs Globais */}
@@ -179,25 +246,53 @@ export default function MarketplaceComparator() {
         </div>
       </div>
 
-      {/* Configurações Específicas do Mercado Livre */}
+      {/* Configurações Específicas por Categoria */}
       <div className="card" style={{ marginBottom: '1.25rem' }}>
         <div className="card-header">
-          <h3><Zap size={16} style={{ verticalAlign: 'middle', marginRight: 6, color: 'var(--ml-yellow)' }} />Configuração da Categoria - Mercado Livre</h3>
+          <h3>Categorias Específicas do Produto</h3>
+          <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>Defina a categoria em que o produto concorre em cada marketplace</p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.85rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.85rem' }}>
           <div className="form-group">
-            <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.4rem', display: 'block' }}>Categoria do Produto</label>
-            <select style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'var(--bg-input)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)', fontSize: '0.9rem' }} value={mlCategoria} onChange={e => setMlCategoria(Number(e.target.value))}>
+            <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--ml-yellow)', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <Zap size={14} /> Categoria Mercado Livre
+            </label>
+            <select className="select-input" value={mlCategoria} onChange={e => setMlCategoria(Number(e.target.value))}>
               {ML_CATEGORIAS.map((c, i) => (
                 <option key={i} value={i}>{c.label} ({c.classico}% / {c.premium}%)</option>
               ))}
             </select>
           </div>
+
           <div className="form-group">
-            <label style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.4rem', display: 'block' }}>Tipo de Anúncio</label>
-            <select style={{ width: '100%', padding: '0.65rem 0.85rem', background: 'var(--bg-input)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', color: 'var(--text-primary)', fontSize: '0.9rem' }} value={mlTipoAnuncio} onChange={e => setMlTipoAnuncio(e.target.value)}>
-              <option value="classico">Clássico</option>
-              <option value="premium">Premium</option>
+            <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--ml-yellow)', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <Zap size={14} /> Tipo Anúncio ML
+            </label>
+            <select className="select-input" value={mlTipoAnuncio} onChange={e => setMlTipoAnuncio(e.target.value)}>
+              <option value="classico">Clássico (10% a 14%)</option>
+              <option value="premium">Premium (15% a 19%)</option>
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--amazon-orange)', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <Package size={14} /> Categoria Amazon Brasil
+            </label>
+            <select className="select-input" value={amazonCategoria} onChange={e => setAmazonCategoria(Number(e.target.value))}>
+              {AMAZON_CATEGORIAS.map((c, i) => (
+                <option key={i} value={i}>{c.label} ({c.comissao}%)</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--shein-pink)', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <Shirt size={14} /> Categoria Shein Brasil
+            </label>
+            <select className="select-input" value={sheinCategoria} onChange={e => setSheinCategoria(Number(e.target.value))}>
+              {SHEIN_CATEGORIAS.map((c, i) => (
+                <option key={i} value={i}>{c.label} ({c.comissao}%)</option>
+              ))}
             </select>
           </div>
         </div>
@@ -225,7 +320,7 @@ export default function MarketplaceComparator() {
                 </div>
                 <div>
                   <h4 style={{ fontWeight: 800, fontSize: '1.05rem', color: 'var(--text-primary)' }}>{item.name}</h4>
-                  <p style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{item.detalheTaxas}</p>
+                  <p style={{ fontSize: '0.72rem', color: 'var(--text-secondary)' }}>{item.detalheTaxas}</p>
                 </div>
               </div>
 
@@ -234,7 +329,7 @@ export default function MarketplaceComparator() {
                 <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
                   Lucro Líquido Real
                 </div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 800, color: item.lucro >= 0 ? 'var(--success)' : 'var(--danger)', marginTop: '0.2rem' }}>
+                <div style={{ fontSize: '1.45rem', fontWeight: 800, color: item.lucro >= 0 ? 'var(--success)' : 'var(--danger)', marginTop: '0.2rem' }}>
                   {formatBRL(item.lucro)}
                 </div>
                 <div style={{ fontSize: '0.85rem', fontWeight: 700, color: item.lucro >= 0 ? 'var(--success)' : 'var(--danger)', marginTop: '0.1rem' }}>

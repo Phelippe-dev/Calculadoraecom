@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import { Zap, ShoppingBag, Video, Info, Truck, Users } from 'lucide-react';
-import { ML_CATEGORIAS, ML_FRETE_BASE, ML_REPUTACAO, SHOPEE_FAIXAS, formatBRL } from './PricingCalculator';
+import { Zap, ShoppingBag, Video, Package, Shirt, Info, Truck, Users } from 'lucide-react';
+import { 
+  ML_CATEGORIAS, ML_FRETE_BASE, ML_REPUTACAO, 
+  SHOPEE_FAIXAS, AMAZON_CATEGORIAS, AMAZON_FRETE_DBA, 
+  SHEIN_CATEGORIAS, SHEIN_FRETE, formatBRL 
+} from './PricingCalculator';
 
 export default function RulesGuide() {
   const [guideTab, setGuideTab] = useState('ml');
@@ -11,11 +15,11 @@ export default function RulesGuide() {
       <div className="card" style={{ marginBottom: '1.25rem' }}>
         <div className="card-header flex-header">
           <div>
-            <span className="badge badge-success">CENTRAL DE AUDITORIA 2026</span>
+            <span className="badge badge-success">CENTRAL DE AUDITORIA &amp; TARIFAS 2026</span>
             <h2 style={{ marginTop: '0.4rem' }}>Guia Oficial de Taxas, Comissões e Regras 2026</h2>
-            <p>Consulte as tabelas e regulamentos oficiais vigentes no Mercado Livre, Shopee e TikTok Shop.</p>
+            <p>Consulte as tabelas e regulamentos oficiais vigentes no Mercado Livre, Shopee, TikTok Shop, Amazon Brasil e Shein.</p>
           </div>
-          <div className="segmented-control" style={{ maxWidth: '380px' }}>
+          <div className="segmented-control" style={{ maxWidth: '620px' }}>
             <button type="button" className={`seg-btn seg-btn-ml ${guideTab === 'ml' ? 'active' : ''}`} onClick={() => setGuideTab('ml')}>
               <Zap size={14} /> Mercado Livre
             </button>
@@ -25,10 +29,17 @@ export default function RulesGuide() {
             <button type="button" className={`seg-btn seg-btn-tiktok ${guideTab === 'tiktok' ? 'active' : ''}`} onClick={() => setGuideTab('tiktok')}>
               <Video size={14} /> TikTok Shop
             </button>
+            <button type="button" className={`seg-btn seg-btn-amazon ${guideTab === 'amazon' ? 'active' : ''}`} onClick={() => setGuideTab('amazon')}>
+              <Package size={14} /> Amazon
+            </button>
+            <button type="button" className={`seg-btn seg-btn-shein ${guideTab === 'shein' ? 'active' : ''}`} onClick={() => setGuideTab('shein')}>
+              <Shirt size={14} /> Shein
+            </button>
           </div>
         </div>
       </div>
 
+      {/* GUIA MERCADO LIVRE */}
       {guideTab === 'ml' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {/* Regras de Logística Atualizadas */}
@@ -40,7 +51,7 @@ export default function RulesGuide() {
               <p>• <strong>Reajuste de Frete (Mercado Envios):</strong> Atualização na tabela oficial para pacotes acima e abaixo de R$ 19,00. O frete agora varia com base no peso real, cubagem (dimensões da embalagem) e distância da entrega.</p>
               <p>• <strong>Envios Flex Dinâmico:</strong> Fim da tarifa/bônus fixo único. O custo do Flex passa a ser calculado individualmente considerando tamanho da caixa, peso e raio de distância.</p>
               <p>• <strong>Reajuste no Mercado Envios Full:</strong> Novas tabelas de armazenagem diária, coletas e regras mais rígidas para produtos sem conformidade de estoque.</p>
-              <p>• <strong>Tarifa Fixa Variável (&lt; R$ 79,00):</strong> Consolidação da cobrança operacional proporcional à cubagem em substituição à taxa fixa padrão por unidade.</p>
+              <p>• <strong>Tarifa Operacional por Unidade (&lt; R$ 79,00):</strong> Cobrança operacional proporcional à cubagem em substituição à antiga taxa fixa fixa linear por unidade.</p>
               <p style={{ marginTop: '0.2rem', color: 'var(--text-primary)', fontWeight: 600 }}>
                 📌 <strong>Ação Recomendada:</strong> Revise as dimensões (A x L x C) e o peso cadastrado de todos os seus SKUs no painel do Mercado Livre para evitar acréscimos indevidos por estimativa de cubagem.
               </p>
@@ -66,10 +77,6 @@ export default function RulesGuide() {
               <Truck size={18} style={{ color: 'var(--ml-yellow)' }} />
               Tabela Oficial de Taxas de Envio &amp; Peso Mercado Envios 2026
             </h3>
-            <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '0.85rem' }}>
-              Tabela oficial de fretes base e tarifas de gestão logística (&lt; R$79 = 32% do frete base)
-            </p>
-
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
                 <thead>
@@ -143,6 +150,7 @@ export default function RulesGuide() {
         </div>
       )}
 
+      {/* GUIA SHOPEE */}
       {guideTab === 'shopee' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div className="card" style={{ borderLeft: '4px solid var(--shopee-orange)' }}>
@@ -150,23 +158,23 @@ export default function RulesGuide() {
               <ShoppingBag size={18} /> Regras Oficiais Shopee Brasil 2026
             </h3>
             <div style={{ fontSize: '0.88rem', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <p>• <strong>Comissão Escalonada por Faixa:</strong> A comissão é dividida em faixas de preço final do produto. Itens até R$79,99 possuem comissão de 20% + R$4,50 de taxa fixa. Itens a partir de R$80,00 cobram 14% de comissão base com taxas fixas progressivas.</p>
-              <p>• <strong>🔥 Nova Atualização de Afiliados Shopee 2026:</strong> Vendedores que ativam o Programa Oficial de Afiliados Shopee configuram comissão adicional entre <strong>2,5% e 10,0%</strong> para divulgadores parceiros. A Shopee aplica um <strong>teto máximo de cobrança por item de R$ 20,00</strong> por venda convertida por afiliado.</p>
-              <p>• <strong>Programa de Frete Grátis Obrigatório:</strong> Todas as contas participantes do programa de Frete Grátis já possuem o cupom de frete embutido de até R$ 20, R$ 30 ou R$ 40 dependendo do valor.</p>
-              <p>• <strong>Subsídio Especial PIX:</strong> A Shopee concede subsídio de 5% a 8% nos custos de comissão para pedidos pagos via PIX nas faixas superiores.</p>
-              <p>• <strong>Contas CPF de Alto Volume:</strong> Contas operadas como CPF que venderem mais de 450 itens em 90 dias sofrem acréscimo de R$ 3,00 por item enviado.</p>
+              <p>• <strong>Comissão Escalonada por Faixa:</strong> A comissão inclui transação + frete grátis integrado. Itens até R$ 79,99 possuem comissão de 20% + R$ 4,50 de taxa fixa. Para itens de super baixo ticket (até R$ 8,99), a taxa fixa é limitada a metade do preço do produto.</p>
+              <p>• <strong>Fim do Teto de Comissão:</strong> O antigo teto limite de R$ 100 por item foi extinto pela Shopee. Itens de ticket alto agora pagam 14% integralmente.</p>
+              <p>• <strong>Faixa Acima de R$ 500,00:</strong> 14% de comissão + R$ 26,00 de tarifa fixa por item.</p>
+              <p>• <strong>Programa de Afiliados Shopee 2026:</strong> O vendedor configura entre <strong>2,5% e 10,0%</strong> para divulgadores parceiros, com <strong>teto de cobrança protegido de R$ 20,00</strong> por venda.</p>
+              <p>• <strong>Subsídio Especial PIX:</strong> O comprador recebe 5% ou 8% de desconto automático no Pix subsidiado pela Shopee (sem alterar a receita nominal líquida do vendedor).</p>
+              <p>• <strong>Contas CPF de Alto Volume:</strong> Contas CPF que venderem mais de 450 itens em 90 dias sofrem acréscimo de R$ 3,00 por item enviado.</p>
             </div>
           </div>
 
-          {/* Destaque Atualização Afiliados Shopee */}
           <div className="card" style={{ border: '1px solid var(--shopee-orange-border)', background: 'var(--shopee-orange-bg)' }}>
             <h3 style={{ color: 'var(--shopee-orange)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Users size={18} /> Nova Regra do Programa de Afiliados Shopee 2026
+              <Users size={18} /> Programa de Afiliados Shopee 2026
             </h3>
             <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
               <p>📌 <strong>Comissão de Afiliados Padrão:</strong> 2,5% a 5,0% (configurável pelo vendedor no Painel de Afiliados da Shopee).</p>
               <p>📌 <strong>Comissão Extra em Campanhas de Influenciadores:</strong> Até 10,0% para produtos em destaque.</p>
-              <p>🛡️ <strong>Teto Máximo Protegido:</strong> O teto máximo cobrado pela Shopee no programa de afiliados é de <strong>R$ 20,00 por unidade vendida</strong>, mesmo para produtos de ticket alto.</p>
+              <p>🛡️ <strong>Teto Máximo Protegido:</strong> O teto máximo cobrado pela Shopee no programa de afiliados é de <strong>R$ 20,00 por unidade vendida</strong>.</p>
             </div>
           </div>
 
@@ -180,7 +188,7 @@ export default function RulesGuide() {
                     <th style={{ padding: '0.6rem' }}>Comissão (%)</th>
                     <th style={{ padding: '0.6rem' }}>Taxa Fixa (R$)</th>
                     <th style={{ padding: '0.6rem' }}>Subsídio Frete</th>
-                    <th style={{ padding: '0.6rem' }}>Subsídio PIX</th>
+                    <th style={{ padding: '0.6rem' }}>Desconto PIX Comprador</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -190,7 +198,7 @@ export default function RulesGuide() {
                       <td style={{ padding: '0.6rem' }}>{faixa.comissao}%</td>
                       <td style={{ padding: '0.6rem', fontWeight: 600 }}>{formatBRL(faixa.taxaFixa)}</td>
                       <td style={{ padding: '0.6rem', color: 'var(--text-primary)' }}>Até {formatBRL(faixa.subsidioFrete)}</td>
-                      <td style={{ padding: '0.6rem', color: 'var(--success)' }}>{faixa.subsidioPixPct ? `${faixa.subsidioPixPct}%` : 'N/A'}</td>
+                      <td style={{ padding: '0.6rem', color: 'var(--success)' }}>{faixa.subsidioPixPct ? `${faixa.subsidioPixPct}% (Subsidiado Shopee)` : 'N/A'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -200,6 +208,7 @@ export default function RulesGuide() {
         </div>
       )}
 
+      {/* GUIA TIKTOK SHOP */}
       {guideTab === 'tiktok' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div className="card" style={{ borderLeft: '4px solid var(--tiktok-cyan)' }}>
@@ -207,12 +216,10 @@ export default function RulesGuide() {
               <Video size={18} /> Guia Completo de Regras &amp; Taxas TikTok Shop 2026
             </h3>
             <div style={{ fontSize: '0.88rem', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
-              <p>• <strong>Comissão Base Escalonada por Preço:</strong> Produtos com preço final menor que <strong>R$ 50,00</strong> possuem comissão base de <strong>10% + R$ 4,00</strong> de tarifa fixa. Produtos a partir de <strong>R$ 50,00</strong> possuem comissão reduzida para <strong>6% + R$ 6,00</strong> por unidade vendida.</p>
+              <p>• <strong>Comissão Base Escalonada por Preço:</strong> Produtos com preço menor que <strong>R$ 50,00</strong> possuem comissão base de <strong>10% + R$ 4,00</strong> de tarifa fixa. Produtos a partir de <strong>R$ 50,00</strong> possuem comissão reduzida para <strong>6% + R$ 6,00</strong> por unidade vendida.</p>
               <p>• <strong>Programa de Frete Grátis Coparticipado (TikTok Shipping):</strong> Taxa de <strong>6%</strong> sobre o valor do produto, com teto máximo cobrado de <strong>R$ 50,00 por item</strong>.</p>
-              <p>• <strong>Taxa de Processamento de Pagamento (Gateway TikTok):</strong> Cobrança de <strong>2,0%</strong> sobre o total do pedido referente à liquidação de cartão, PIX e boleto.</p>
-              <p>• <strong>Isenção Promocional de 60 Dias para Vendedores Novos:</strong> Vendedores recém-cadastrados ganham <strong>0% de comissão base</strong> nos primeiros 60 dias de operação (permanecem apenas as taxas de frete e processamento se ativadas).</p>
-              <p>• <strong>Comissão de Afiliados (Creator Marketplace):</strong> O vendedor define a comissão dos criadores (geralmente entre 10% e 15%), acrescida de <strong>1,5% de taxa de intermediação de plataforma</strong> da TikTok Creator Store.</p>
-              <p>• <strong>Cupons de Live Commerce &amp; Flash Sales:</strong> Em campanhas oficiais de Lives com cupons patrocinados pelo TikTok, o valor do subsídio recebido entra como receita no repasse financeiro.</p>
+              <p>• <strong>Isenção Promocional de 60 Dias para Vendedores Novos:</strong> Vendedores recém-cadastrados ganham <strong>0% de comissão base</strong> nos primeiros 60 dias de operação.</p>
+              <p>• <strong>Comissão de Afiliados (Creator Marketplace):</strong> O vendedor define a comissão dos criadores (geralmente entre 10% e 15%) diretamente no painel do TikTok Shop.</p>
             </div>
           </div>
 
@@ -248,20 +255,147 @@ export default function RulesGuide() {
                     <td style={{ padding: '0.6rem', color: 'var(--text-primary)' }}>Garante frete grátis aos compradores na plataforma</td>
                   </tr>
                   <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                    <td style={{ padding: '0.6rem', fontWeight: 700, color: 'var(--tiktok-cyan)' }}>Processamento Financeiro</td>
-                    <td style={{ padding: '0.6rem', fontWeight: 600 }}>2,0% por pedido</td>
-                    <td style={{ padding: '0.6rem', color: 'var(--text-primary)' }}>Taxa administrativa de recebimento (Cartão, PIX, Boleto)</td>
-                  </tr>
-                  <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                     <td style={{ padding: '0.6rem', fontWeight: 700, color: 'var(--success)' }}>Isenção Conta Nova</td>
                     <td style={{ padding: '0.6rem', fontWeight: 700, color: 'var(--success)' }}>0,0% nos primeiros 60 dias</td>
                     <td style={{ padding: '0.6rem', color: 'var(--text-primary)' }}>Isenção total da comissão base para novos vendedores</td>
                   </tr>
-                  <tr style={{ borderBottom: '1px solid var(--border-subtle)' }}>
-                    <td style={{ padding: '0.6rem', fontWeight: 700, color: 'var(--tiktok-cyan)' }}>Intermediação de Afiliados</td>
-                    <td style={{ padding: '0.6rem', fontWeight: 600 }}>1,5% da comissão do criador</td>
-                    <td style={{ padding: '0.6rem', color: 'var(--text-primary)' }}>Taxa da plataforma TikTok Creator Store sobre vendas via afiliados</td>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* GUIA AMAZON BRASIL */}
+      {guideTab === 'amazon' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div className="card" style={{ borderLeft: '4px solid var(--amazon-orange)' }}>
+            <h3 style={{ color: 'var(--amazon-orange)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Package size={18} /> Guia Oficial de Tarifas Amazon Brasil 2026
+            </h3>
+            <div style={{ fontSize: '0.88rem', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+              <p>• <strong>Planos de Venda:</strong> No <strong>Plano Profissional</strong> (R$ 19,00/mês, com 1º ano gratuito para novos cadastros), você <strong>não paga taxa fixa de R$ 2,00 por item</strong>. No <strong>Plano Individual</strong> (sem mensalidade), é cobrado R$ 2,00 fixo por item vendido além da comissão.</p>
+              <p>• <strong>Comissão por Categoria (Taxa de Indicação):</strong> Incide sobre o valor total do pedido. A comissão varia de <strong>10% a 15%</strong> na maioria das categorias, com um <strong>piso mínimo de R$ 1,00</strong> por unidade vendida.</p>
+              <p>• <strong>DBA (Delivery by Amazon):</strong> O vendedor mantém o estoque em seu galpão, e a transportadora da Amazon realiza a coleta e entrega ao consumidor final com custos reduzidos tabelados por peso.</p>
+              <p>• <strong>FBA (Fulfillment by Amazon):</strong> A Amazon armazena, embala e despacha os produtos a partir de seus Centros de Distribuição (CDs), além de oferecer o selo Prime com frete grátis para clientes.</p>
+            </div>
+          </div>
+
+          <div className="card">
+            <h3 style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Truck size={18} style={{ color: 'var(--amazon-orange)' }} />
+              Tabela de Frete DBA &amp; FBA Amazon Brasil
+            </h3>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--border-subtle)', color: 'var(--text-muted)', textAlign: 'left' }}>
+                    <th style={{ padding: '0.6rem' }}>Faixa de Peso</th>
+                    <th style={{ padding: '0.6rem' }}>DBA (Delivery by Amazon)</th>
+                    <th style={{ padding: '0.6rem' }}>FBA (Fulfillment by Amazon CD)</th>
                   </tr>
+                </thead>
+                <tbody>
+                  {AMAZON_FRETE_DBA.map((f, idx) => (
+                    <tr key={idx} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                      <td style={{ padding: '0.6rem', fontWeight: 700, color: 'var(--text-primary)' }}>{f.label}</td>
+                      <td style={{ padding: '0.6rem', color: 'var(--amazon-orange)', fontWeight: 600 }}>{formatBRL(f.valor)}</td>
+                      <td style={{ padding: '0.6rem', color: 'var(--success)', fontWeight: 600 }}>{formatBRL(f.valor + 2.50)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="card">
+            <h3 style={{ marginBottom: '0.75rem' }}>Comissões por Categoria Amazon Brasil</h3>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--border-subtle)', color: 'var(--text-muted)', textAlign: 'left' }}>
+                    <th style={{ padding: '0.6rem' }}>Categoria</th>
+                    <th style={{ padding: '0.6rem' }}>Comissão Oficial (%)</th>
+                    <th style={{ padding: '0.6rem' }}>Tarifa Mínima</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {AMAZON_CATEGORIAS.map((cat, idx) => (
+                    <tr key={idx} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                      <td style={{ padding: '0.6rem', fontWeight: 600 }}>{cat.label}</td>
+                      <td style={{ padding: '0.6rem', color: 'var(--amazon-orange)', fontWeight: 700 }}>{cat.comissao}%</td>
+                      <td style={{ padding: '0.6rem', color: 'var(--text-secondary)' }}>R$ 1,00 por item</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* GUIA SHEIN BRASIL */}
+      {guideTab === 'shein' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div className="card" style={{ borderLeft: '4px solid var(--shein-pink)' }}>
+            <h3 style={{ color: 'var(--shein-pink)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Shirt size={18} /> Guia Oficial de Vendedores Shein Brasil 2026
+            </h3>
+            <div style={{ fontSize: '0.88rem', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+              <p>• <strong>Sem Taxa Fixa por Item:</strong> Diferente de outros marketplaces, a Shein <strong>não cobra taxa fixa por item vendido</strong> nem mensalidade para manter a loja ativa!</p>
+              <p>• <strong>Comissão por Categoria:</strong> A alíquota é de <strong>20% para Moda Feminina</strong> e <strong>18% para as demais categorias</strong> (Moda Masculina, Infantil, Calçados, Bolsas, Casa, Decoração e Beleza).</p>
+              <p>• <strong>Isenção Inicial de 30 Dias:</strong> Novos sellers contam com benefício de <strong>0% de comissão nos primeiros 30 dias</strong> após a aprovação da conta.</p>
+              <p>• <strong>Logística Integrada Shein:</strong> O envio é realizado via transportadoras parceiras oficiais ou pontos de coleta credenciados, com tabelas competitivas por peso e subsídios frequentes de frete aos compradores.</p>
+              <p>• <strong>Sem Comissão em Devoluções:</strong> Em pedidos cancelados ou reembolsados pelo cliente, a comissão não é cobrada.</p>
+            </div>
+          </div>
+
+          <div className="card">
+            <h3 style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Truck size={18} style={{ color: 'var(--shein-pink)' }} />
+              Tabela de Envio Integrado Shein Brasil por Peso
+            </h3>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--border-subtle)', color: 'var(--text-muted)', textAlign: 'left' }}>
+                    <th style={{ padding: '0.6rem' }}>Faixa de Peso</th>
+                    <th style={{ padding: '0.6rem' }}>Custo de Envio Vendedor</th>
+                    <th style={{ padding: '0.6rem' }}>Condições de Coleta</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {SHEIN_FRETE.map((f, idx) => (
+                    <tr key={idx} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                      <td style={{ padding: '0.6rem', fontWeight: 700, color: 'var(--text-primary)' }}>{f.label}</td>
+                      <td style={{ padding: '0.6rem', color: 'var(--shein-pink)', fontWeight: 700 }}>{formatBRL(f.valor)}</td>
+                      <td style={{ padding: '0.6rem', color: 'var(--text-secondary)' }}>Postagem em Ponto de Coleta ou Coleta no Endereço</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="card">
+            <h3 style={{ marginBottom: '0.75rem' }}>Comissões Oficiais por Categoria Shein Brasil</h3>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--border-subtle)', color: 'var(--text-muted)', textAlign: 'left' }}>
+                    <th style={{ padding: '0.6rem' }}>Categoria</th>
+                    <th style={{ padding: '0.6rem' }}>Comissão Oficial (%)</th>
+                    <th style={{ padding: '0.6rem' }}>Tarifa Fixa por Item</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {SHEIN_CATEGORIAS.map((cat, idx) => (
+                    <tr key={idx} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                      <td style={{ padding: '0.6rem', fontWeight: 600 }}>{cat.label}</td>
+                      <td style={{ padding: '0.6rem', color: 'var(--shein-pink)', fontWeight: 700 }}>{cat.comissao}%</td>
+                      <td style={{ padding: '0.6rem', color: 'var(--success)', fontWeight: 600 }}>R$ 0,00 (Isento)</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

@@ -48,6 +48,20 @@
   --tiktok-cyan-border: rgba(0, 242, 254, 0.3);
   --tiktok-cyan-glow: rgba(0, 242, 254, 0.25);
 
+  /* Amazon Brasil - Laranja / Gold */
+  --amazon-orange: #FF9900;
+  --amazon-orange-hover: #FFAC33;
+  --amazon-orange-bg: rgba(255, 153, 0, 0.12);
+  --amazon-orange-border: rgba(255, 153, 0, 0.35);
+  --amazon-orange-glow: rgba(255, 153, 0, 0.25);
+
+  /* Shein Brasil - Pink Neon Fashion */
+  --shein-pink: #FF007A;
+  --shein-pink-hover: #FF3399;
+  --shein-pink-bg: rgba(255, 0, 122, 0.12);
+  --shein-pink-border: rgba(255, 0, 122, 0.35);
+  --shein-pink-glow: rgba(255, 0, 122, 0.25);
+
   /* Purple Theme Token for Navigation Tabs */
   --purple-main: #A855F7;
   --purple-hover: #C084FC;
@@ -97,6 +111,24 @@
   --accent-border: rgba(0, 242, 254, 0.4);
   --accent-glow: rgba(0, 242, 254, 0.3);
   --accent-text: #090D16;
+}
+
+[data-theme="amazon"] {
+  --accent: #FF9900;
+  --accent-hover: #FFAC33;
+  --accent-bg: rgba(255, 153, 0, 0.15);
+  --accent-border: rgba(255, 153, 0, 0.45);
+  --accent-glow: rgba(255, 153, 0, 0.35);
+  --accent-text: #111827;
+}
+
+[data-theme="shein"] {
+  --accent: #FF007A;
+  --accent-hover: #FF3399;
+  --accent-bg: rgba(255, 0, 122, 0.15);
+  --accent-border: rgba(255, 0, 122, 0.45);
+  --accent-glow: rgba(255, 0, 122, 0.35);
+  --accent-text: #FFFFFF;
 }
 
 [data-theme="comparator"] {
@@ -224,19 +256,21 @@ body {
 .segmented-control {
   display: flex;
   background: var(--bg-input);
-  padding: 3px;
+  padding: 4px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-subtle);
   width: 100%;
+  gap: 4px;
+  flex-wrap: wrap;
 }
 
 .seg-btn {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  padding: 0.55rem 0.75rem;
+  padding: 0.55rem 0.65rem;
   border: none;
   background: transparent;
   color: var(--text-secondary);
@@ -246,7 +280,8 @@ body {
   cursor: pointer;
   transition: all 0.2s ease;
   touch-action: manipulation;
-  min-height: 42px;
+  min-height: 40px;
+  white-space: nowrap;
 }
 
 .seg-btn:hover {
@@ -273,6 +308,20 @@ body {
   color: #090D16 !important;
   font-weight: 800 !important;
   box-shadow: 0 2px 12px rgba(0, 242, 254, 0.45) !important;
+}
+
+.seg-btn-amazon.active {
+  background: #FF9900 !important;
+  color: #111827 !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 12px rgba(255, 153, 0, 0.45) !important;
+}
+
+.seg-btn-shein.active {
+  background: #FF007A !important;
+  color: #FFFFFF !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 12px rgba(255, 0, 122, 0.45) !important;
 }
 
 /* Cards & Layout */
@@ -482,6 +531,18 @@ body {
   border: 1px solid var(--tiktok-cyan-border);
 }
 
+.badge-amazon {
+  background: var(--amazon-orange-bg);
+  color: var(--amazon-orange);
+  border: 1px solid var(--amazon-orange-border);
+}
+
+.badge-shein {
+  background: var(--shein-pink-bg);
+  color: var(--shein-pink);
+  border: 1px solid var(--shein-pink-border);
+}
+
 .badge-success {
   background: var(--success-bg);
   color: var(--success);
@@ -526,7 +587,7 @@ body {
 /* Comparison Table */
 .comparator-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 1.25rem;
 }
 

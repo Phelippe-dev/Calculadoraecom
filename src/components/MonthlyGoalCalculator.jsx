@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { 
   TrendingUp, Calendar, Bookmark, FileSpreadsheet, 
-  Printer, Zap, ShoppingBag, Video, RotateCcw
+  Printer, Zap, ShoppingBag, Video, Package, Shirt, RotateCcw
 } from 'lucide-react';
 import FormattedInput from './FormattedInput';
 import { parseBRL, formatBRL, formatPct } from './PricingCalculator';
@@ -124,6 +124,14 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
   const [margemTikTok, setMargemTikTok] = useState('');
   const [metaTikTok, setMetaTikTok] = useState('');
 
+  const [fatAmazon, setFatAmazon] = useState('');
+  const [margemAmazon, setMargemAmazon] = useState('');
+  const [metaAmazon, setMetaAmazon] = useState('');
+
+  const [fatShein, setFatShein] = useState('');
+  const [margemShein, setMargemShein] = useState('');
+  const [metaShein, setMetaShein] = useState('');
+
   // Processamento de Tempo
   const rawDiaAtual = parseInt(diaAtual, 10);
   const numDiaAtual = isNaN(rawDiaAtual) ? 1 : Math.max(1, Math.min(31, rawDiaAtual));
@@ -144,6 +152,8 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
     setFatML(''); setMargemML(''); setMetaML('');
     setFatShopee(''); setMargemShopee(''); setMetaShopee('');
     setFatTikTok(''); setMargemTikTok(''); setMetaTikTok('');
+    setFatAmazon(''); setMargemAmazon(''); setMetaAmazon('');
+    setFatShein(''); setMargemShein(''); setMetaShein('');
   };
 
   // Fatores Sazonais
@@ -186,15 +196,17 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
   const projML = calcProjection(fatML, margemML, metaML);
   const projShopee = calcProjection(fatShopee, margemShopee, metaShopee);
   const projTikTok = calcProjection(fatTikTok, margemTikTok, metaTikTok);
+  const projAmazon = calcProjection(fatAmazon, margemAmazon, metaAmazon);
+  const projShein = calcProjection(fatShein, margemShein, metaShein);
 
-  // Totais da Empresa
-  const totalFatAtual = projML.fat + projShopee.fat + projTikTok.fat;
-  const totalMeta = projML.meta + projShopee.meta + projTikTok.meta;
-  const totalProjecaoFinal = projML.projecaoFinal + projShopee.projecaoFinal + projTikTok.projecaoFinal;
-  const totalLucroFinal = projML.lucroFinal + projShopee.lucroFinal + projTikTok.lucroFinal;
+  // Totais da Empresa (5 Marketplaces)
+  const totalFatAtual = projML.fat + projShopee.fat + projTikTok.fat + projAmazon.fat + projShein.fat;
+  const totalMeta = projML.meta + projShopee.meta + projTikTok.meta + projAmazon.meta + projShein.meta;
+  const totalProjecaoFinal = projML.projecaoFinal + projShopee.projecaoFinal + projTikTok.projecaoFinal + projAmazon.projecaoFinal + projShein.projecaoFinal;
+  const totalLucroFinal = projML.lucroFinal + projShopee.lucroFinal + projTikTok.lucroFinal + projAmazon.lucroFinal + projShein.lucroFinal;
 
   const mediaPassadaTotal = numDiaAtual > 0 ? totalFatAtual / numDiaAtual : 0;
-  const mediaProjetadaTotal = projML.mediaProjetada + projShopee.mediaProjetada + projTikTok.mediaProjetada;
+  const mediaProjetadaTotal = projML.mediaProjetada + projShopee.mediaProjetada + projTikTok.mediaProjetada + projAmazon.mediaProjetada + projShein.mediaProjetada;
   const totalFaltaParaMeta = Math.max(0, totalMeta - totalFatAtual);
   const ritmoNecessarioTotal = diasRestantes > 0 ? totalFaltaParaMeta / diasRestantes : 0;
   const diferencaRitmoTotal = mediaProjetadaTotal - ritmoNecessarioTotal;
@@ -207,8 +219,10 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
     const ml = calcProjection(fatML, margemML, metaML, fator);
     const sh = calcProjection(fatShopee, margemShopee, metaShopee, fator);
     const tk = calcProjection(fatTikTok, margemTikTok, metaTikTok, fator);
-    const fatTotal = ml.projecaoFinal + sh.projecaoFinal + tk.projecaoFinal;
-    const lucroTotal = ml.lucroFinal + sh.lucroFinal + tk.lucroFinal;
+    const az = calcProjection(fatAmazon, margemAmazon, metaAmazon, fator);
+    const sn = calcProjection(fatShein, margemShein, metaShein, fator);
+    const fatTotal = ml.projecaoFinal + sh.projecaoFinal + tk.projecaoFinal + az.projecaoFinal + sn.projecaoFinal;
+    const lucroTotal = ml.lucroFinal + sh.lucroFinal + tk.lucroFinal + az.lucroFinal + sn.lucroFinal;
     return { fatTotal, lucroTotal };
   };
 
@@ -220,6 +234,8 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
   const shareML = totalProjecaoFinal > 0 ? (projML.projecaoFinal / totalProjecaoFinal) * 100 : 0;
   const shareShopee = totalProjecaoFinal > 0 ? (projShopee.projecaoFinal / totalProjecaoFinal) * 100 : 0;
   const shareTikTok = totalProjecaoFinal > 0 ? (projTikTok.projecaoFinal / totalProjecaoFinal) * 100 : 0;
+  const shareAmazon = totalProjecaoFinal > 0 ? (projAmazon.projecaoFinal / totalProjecaoFinal) * 100 : 0;
+  const shareShein = totalProjecaoFinal > 0 ? (projShein.projecaoFinal / totalProjecaoFinal) * 100 : 0;
 
   // Salvar Simulação de Projeção
   const handleSaveProjection = () => {
@@ -229,7 +245,7 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
       onSaveSimulation({
         id: Date.now(),
         date: new Date().toLocaleDateString('pt-BR'),
-        title: `Projeção Consolidada (Dia ${numDiaAtual}/${numDiasNoMes})`,
+        title: `Projeção Consolidada 5 Marketplaces (Dia ${numDiaAtual}/${numDiasNoMes})`,
         marketplace: 'consolidado',
         precoVenda: totalProjecaoFinal,
         custoProd: Math.max(0, totalProjecaoFinal - totalLucroFinal),
@@ -248,6 +264,8 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
       ["Mercado Livre", formatBRL(projML.fat), formatBRL(projML.mediaPassada), formatBRL(projML.meta), formatBRL(projML.ritmoNecessario), formatBRL(projML.projecaoFinal), formatPct(projML.margem), formatBRL(projML.lucroFinal), `${projML.atingimentoMeta.toFixed(1)}%`],
       ["Shopee", formatBRL(projShopee.fat), formatBRL(projShopee.mediaPassada), formatBRL(projShopee.meta), formatBRL(projShopee.ritmoNecessario), formatBRL(projShopee.projecaoFinal), formatPct(projShopee.margem), formatBRL(projShopee.lucroFinal), `${projShopee.atingimentoMeta.toFixed(1)}%`],
       ["TikTok Shop", formatBRL(projTikTok.fat), formatBRL(projTikTok.mediaPassada), formatBRL(projTikTok.meta), formatBRL(projTikTok.ritmoNecessario), formatBRL(projTikTok.projecaoFinal), formatPct(projTikTok.margem), formatBRL(projTikTok.lucroFinal), `${projTikTok.atingimentoMeta.toFixed(1)}%`],
+      ["Amazon Brasil", formatBRL(projAmazon.fat), formatBRL(projAmazon.mediaPassada), formatBRL(projAmazon.meta), formatBRL(projAmazon.ritmoNecessario), formatBRL(projAmazon.projecaoFinal), formatPct(projAmazon.margem), formatBRL(projAmazon.lucroFinal), `${projAmazon.atingimentoMeta.toFixed(1)}%`],
+      ["Shein Brasil", formatBRL(projShein.fat), formatBRL(projShein.mediaPassada), formatBRL(projShein.meta), formatBRL(projShein.ritmoNecessario), formatBRL(projShein.projecaoFinal), formatPct(projShein.margem), formatBRL(projShein.lucroFinal), `${projShein.atingimentoMeta.toFixed(1)}%`],
       ["CONSOLIDADO DA EMPRESA", formatBRL(totalFatAtual), formatBRL(mediaPassadaTotal), formatBRL(totalMeta), formatBRL(ritmoNecessarioTotal), formatBRL(totalProjecaoFinal), formatPct(totalMargemMedia), formatBRL(totalLucroFinal), `${totalAtingimento.toFixed(1)}%`]
     ];
 
@@ -356,7 +374,7 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
         </div>
 
         {/* COLUNAS DE MARKETPLACES */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem' }}>
           <MarketplaceCard 
             title="Mercado Livre" icon={<Zap size={18} />} color="#FBBF24" accentBg="rgba(251, 191, 36, 0.05)"
             proj={projML} setFat={setFatML} setMargem={setMargemML} setMeta={setMetaML}
@@ -373,6 +391,18 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
             title="TikTok Shop" icon={<Video size={18} />} color="#06B6D4" accentBg="rgba(6, 182, 212, 0.05)"
             proj={projTikTok} setFat={setFatTikTok} setMargem={setMargemTikTok} setMeta={setMetaTikTok}
             fatStr={fatTikTok} margemStr={margemTikTok} metaStr={metaTikTok}
+            diasRestantes={diasRestantes}
+          />
+          <MarketplaceCard 
+            title="Amazon Brasil" icon={<Package size={18} />} color="#FF9900" accentBg="rgba(255, 153, 0, 0.05)"
+            proj={projAmazon} setFat={setFatAmazon} setMargem={setMargemAmazon} setMeta={setMetaAmazon}
+            fatStr={fatAmazon} margemStr={margemAmazon} metaStr={metaAmazon}
+            diasRestantes={diasRestantes}
+          />
+          <MarketplaceCard 
+            title="Shein Brasil" icon={<Shirt size={18} />} color="#FF007A" accentBg="rgba(255, 0, 122, 0.05)"
+            proj={projShein} setFat={setFatShein} setMargem={setMargemShein} setMeta={setMetaShein}
+            fatStr={fatShein} margemStr={margemShein} metaStr={metaShein}
             diasRestantes={diasRestantes}
           />
         </div>
@@ -442,20 +472,24 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
           {/* Share de Canais (Distribuição Visual de Faturamento) */}
           {totalProjecaoFinal > 0 && (
             <div style={{ marginBottom: '1.5rem', background: 'rgba(0,0,0,0.15)', padding: '1rem', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.6rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                 <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--text-primary)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                   Composição do Faturamento por Canal (Share)
                 </span>
-                <div style={{ display: 'flex', gap: '1rem', fontSize: '0.78rem' }}>
+                <div style={{ display: 'flex', gap: '0.8rem', fontSize: '0.76rem', flexWrap: 'wrap' }}>
                   <span style={{ color: '#FBBF24' }}>● ML: {shareML.toFixed(1)}%</span>
                   <span style={{ color: '#F97316' }}>● Shopee: {shareShopee.toFixed(1)}%</span>
                   <span style={{ color: '#06B6D4' }}>● TikTok: {shareTikTok.toFixed(1)}%</span>
+                  <span style={{ color: '#FF9900' }}>● Amazon: {shareAmazon.toFixed(1)}%</span>
+                  <span style={{ color: '#FF007A' }}>● Shein: {shareShein.toFixed(1)}%</span>
                 </div>
               </div>
               <div style={{ display: 'flex', height: '10px', borderRadius: '5px', overflow: 'hidden', background: 'var(--bg-input)' }}>
                 <div style={{ width: `${shareML}%`, background: '#FBBF24', transition: 'width 0.4s ease' }} title={`Mercado Livre: ${shareML.toFixed(1)}%`} />
                 <div style={{ width: `${shareShopee}%`, background: '#F97316', transition: 'width 0.4s ease' }} title={`Shopee: ${shareShopee.toFixed(1)}%`} />
                 <div style={{ width: `${shareTikTok}%`, background: '#06B6D4', transition: 'width 0.4s ease' }} title={`TikTok Shop: ${shareTikTok.toFixed(1)}%`} />
+                <div style={{ width: `${shareAmazon}%`, background: '#FF9900', transition: 'width 0.4s ease' }} title={`Amazon Brasil: ${shareAmazon.toFixed(1)}%`} />
+                <div style={{ width: `${shareShein}%`, background: '#FF007A', transition: 'width 0.4s ease' }} title={`Shein Brasil: ${shareShein.toFixed(1)}%`} />
               </div>
             </div>
           )}

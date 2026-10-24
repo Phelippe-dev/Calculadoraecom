@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator, TrendingUp, Zap, ShoppingBag, Video, Bookmark } from 'lucide-react';
+import { Calculator, TrendingUp, Zap, ShoppingBag, Video, Package, Shirt, Bookmark, CheckCircle } from 'lucide-react';
 import FormattedInput from './FormattedInput';
 
 // ============================================================
 // TABELAS OFICIAIS 2026 — SHOPEE BRASIL
-// Fonte: Shopee Central do Vendedor (Março/2026)
+// Fonte: Shopee Central do Vendedor (Atualizado 2026)
 // ============================================================
 export const SHOPEE_FAIXAS = [
   {
-    label: 'Até R$ 79,99',
-    min: 0, max: 79.99,
-    comissao: 20.0,    // inclui taxa de transação + frete grátis obrigatorio
+    label: 'Até R$ 8,99 (Super Baixo Ticket)',
+    min: 0, max: 8.99,
+    comissao: 20.0,    // inclui taxa de transação + frete grátis obrigatório
+    taxaFixa: 4.50,    // limitado a 50% do valor do produto na cobrança
+    subsidioFrete: 20.00,
+    descFrete: 'Subsídio oficial de Frete Grátis de até R$ 20,00 (Tarifa fixa limitada a 50% do valor)',
+  },
+  {
+    label: 'R$ 9,00 a R$ 79,99',
+    min: 9.00, max: 79.99,
+    comissao: 20.0,    // inclui taxa de transação + frete grátis obrigatório
     taxaFixa: 4.50,
     subsidioFrete: 20.00,
     descFrete: 'Subsídio oficial de Frete Grátis de até R$ 20,00',
@@ -46,9 +54,9 @@ export const SHOPEE_FAIXAS = [
     label: 'Acima de R$ 500,00',
     min: 500, max: Infinity,
     comissao: 14.0,
-    taxaFixa: 28.00,
+    taxaFixa: 26.00,   // Ajustado para o valor oficial de R$ 26,00 (sem teto limite de comissão)
     subsidioFrete: 40.00,
-    descFrete: 'Subsídio oficial de Frete Grátis de até R$ 40,00',
+    descFrete: 'Subsídio oficial de Frete Grátis de até R$ 40,00 (Sem teto de comissão)',
     subsidioPixPct: 8.0,
   },
 ];
@@ -90,14 +98,72 @@ export const ML_REPUTACAO = [
   { label: 'Sem Reputação / Amarela — 0% Off no Frete', descPct: 0 },
 ];
 
+// ============================================================
+// TABELAS OFICIAIS 2026 — AMAZON BRASIL
+// Fonte: Amazon Seller Central Brasil (Tarifas e Planos de Venda)
+// ============================================================
+export const AMAZON_CATEGORIAS = [
+  { label: 'Moda, Roupas, Calçados e Bolsas', comissao: 15.0 },
+  { label: 'Beleza, Saúde e Cuidados Pessoais', comissao: 15.0 },
+  { label: 'Casa, Cozinha e Decoração', comissao: 15.0 },
+  { label: 'Livros e Mídias', comissao: 15.0 },
+  { label: 'Brinquedos, Jogos e Bebês', comissao: 15.0 },
+  { label: 'Esportes e Lazer', comissao: 14.0 },
+  { label: 'Ferramentas, Construção e Automotivo', comissao: 13.0 },
+  { label: 'Informática e Eletrônicos', comissao: 10.0 },
+  { label: 'Celulares e Smartphones', comissao: 10.0 },
+  { label: 'Alimentos e Bebidas', comissao: 12.0 },
+  { label: 'Outras Categorias Gerais', comissao: 15.0 },
+];
+
+export const AMAZON_FRETE_DBA = [
+  { label: 'Até 300g', pesoMax: 0.3, valor: 13.90 },
+  { label: '300g a 500g', pesoMax: 0.5, valor: 15.90 },
+  { label: '500g a 1kg', pesoMax: 1.0, valor: 18.50 },
+  { label: '1kg a 2kg', pesoMax: 2.0, valor: 22.00 },
+  { label: '2kg a 5kg', pesoMax: 5.0, valor: 31.00 },
+  { label: '5kg a 10kg', pesoMax: 10.0, valor: 44.00 },
+  { label: 'Acima de 10kg', pesoMax: 999, valor: 59.00 },
+];
+
+// ============================================================
+// TABELAS OFICIAIS 2026 — SHEIN BRASIL
+// Fonte: Shein Marketplace Brasil (Regulamento de Sellers Nacionais)
+// ============================================================
+export const SHEIN_CATEGORIAS = [
+  { label: 'Moda Feminina', comissao: 20.0 },
+  { label: 'Moda Masculina', comissao: 18.0 },
+  { label: 'Moda Infantil e Bebês', comissao: 18.0 },
+  { label: 'Calçados e Bolsas', comissao: 18.0 },
+  { label: 'Casa, Decoração e Utilidades', comissao: 18.0 },
+  { label: 'Beleza e Cuidados Pessoais', comissao: 18.0 },
+  { label: 'Acessórios e Joias/Bijuterias', comissao: 18.0 },
+  { label: 'Outras Categorias Gerais', comissao: 18.0 },
+];
+
+export const SHEIN_FRETE = [
+  { label: 'Até 300g', pesoMax: 0.3, valor: 11.50 },
+  { label: '300g a 500g', pesoMax: 0.5, valor: 13.90 },
+  { label: '500g a 1kg', pesoMax: 1.0, valor: 16.50 },
+  { label: '1kg a 2kg', pesoMax: 2.0, valor: 20.50 },
+  { label: 'Acima de 2kg', pesoMax: 999, valor: 27.00 },
+];
+
 export const formatBRL = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
 export const formatPct = (v) => `${(v || 0).toFixed(2).replace('.', ',')}%`;
 
 export const parseBRL = (str) => {
   if (str === null || str === undefined || str === '') return 0;
-  if (typeof str === 'number') return str;
-  const clean = String(str).replace(/\./g, '').replace(',', '.');
-  return parseFloat(clean) || 0;
+  if (typeof str === 'number') return isNaN(str) ? 0 : str;
+  const s = String(str).trim();
+  if (!s) return 0;
+  if (s.includes(',') && s.includes('.')) {
+    return parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0;
+  }
+  if (s.includes(',')) {
+    return parseFloat(s.replace(',', '.')) || 0;
+  }
+  return parseFloat(s) || 0;
 };
 
 export default function PricingCalculator({ currentMarketplace, onSaveSimulation }) {
@@ -132,6 +198,22 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
   const [tikTokAffiliate, setTikTokAffiliate] = useState('');
   const [tikTokFreeShipping, setTikTokFreeShipping] = useState(true);
   const [tikTokIsencao, setTikTokIsencao] = useState(false);
+
+  // Campos Amazon Brasil
+  const [amazonCategoria, setAmazonCategoria] = useState(0);
+  const [amazonPlano, setAmazonPlano] = useState('pro');      // 'pro' (R$19/mês) ou 'individual' (+R$2/item)
+  const [amazonLogistica, setAmazonLogistica] = useState('dba'); // 'dba', 'fba', 'proprio'
+  const [amazonFreteIdx, setAmazonFreteIdx] = useState(1);    // 300g a 500g
+  const [amazonFreteCustom, setAmazonFreteCustom] = useState('');
+  const [amazonAds, setAmazonAds] = useState('');
+
+  // Campos Shein Brasil
+  const [sheinCategoria, setSheinCategoria] = useState(0);
+  const [sheinFreteIdx, setSheinFreteIdx] = useState(1);      // 300g a 500g
+  const [sheinSubsidioFrete, setSheinSubsidioFrete] = useState(false);
+  const [sheinIsencao, setSheinIsencao] = useState(false);    // 0% comissão por 30 dias
+  const [sheinCupom, setSheinCupom] = useState('');
+  const [sheinAfiliado, setSheinAfiliado] = useState('');
 
   useEffect(() => {
     if (currentMarketplace) {
@@ -198,10 +280,15 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
       let shippingHigh = freteRow.freteBase * descFator;
       if (mlModal === 'full') shippingHigh *= 0.92;
       const pHigh = (numCusto + numEmb + shippingHigh) / denom;
-      if (pHigh >= 79.00) return pHigh;
 
       const feeLow = freteRow.freteBase * 0.32;
       const pLow = (numCusto + numEmb + feeLow) / denom;
+
+      // Se o usuário já está simulando um preço >= 79 (frete grátis) e pHigh for viável (>= 79), manter pHigh
+      if (numPreco >= 79.00 && pHigh >= 79.00) return pHigh;
+      // Se pLow for viável (< 79), é o preço mais competitivo para o comprador
+      if (pLow < 79.00 && (numPreco === 0 || numPreco < 79.00 || pHigh < 79.00)) return pLow;
+      if (pHigh >= 79.00) return pHigh;
       return pLow;
     };
 
@@ -227,6 +314,10 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
 
     let pctTotal = faixa.comissao;
     let taxaFixa = faixa.taxaFixa;
+    // Para produtos abaixo de R$ 8,99, a taxa fixa não pode passar de 50% do valor do produto
+    if (numPreco > 0 && numPreco < 8.99) {
+      taxaFixa = Math.min(faixa.taxaFixa, numPreco * 0.50);
+    }
     if (shopeeTipoConta === 'cpf_alto') taxaFixa += 3.00;
     if (shopeeCampanha) pctTotal += 2.5;
 
@@ -242,7 +333,8 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
     const valorImposto = Number(((numPreco * numImp) / 100).toFixed(2));
     const valorTaxaFixa = Number(taxaFixa.toFixed(2));
 
-    const totalCustos = Number((valorComissao + valorTaxaFixa + valorCupom + valorAfil + valorAds + valorImposto + numEmb + numCusto - subsidioPixValor).toFixed(2));
+    // Nota: O desconto Pix é pago/subsidiado pela Shopee para o comprador, sem onerar nem creditar a mais o vendedor
+    const totalCustos = Number((valorComissao + valorTaxaFixa + valorCupom + valorAfil + valorAds + valorImposto + numEmb + numCusto).toFixed(2));
     const lucro = numPreco > 0 ? Number((numPreco - totalCustos).toFixed(2)) : 0;
     const margemPct = numPreco > 0 ? (lucro / numPreco) * 100 : 0;
 
@@ -254,9 +346,7 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
       for (let f of SHOPEE_FAIXAS) {
         let pct = f.comissao + extraCamp;
         let fix = f.taxaFixa + extraCPF;
-        let pixSub = (shopeePix && f.subsidioPixPct) ? f.subsidioPixPct : 0;
-
-        const pctVar = (pct + numCupom + numAfil + numAds + numImp - pixSub) / 100;
+        const pctVar = (pct + numCupom + numAfil + numAds + numImp) / 100;
         const denom = 1 - (pctVar + targetPct / 100);
         if (denom <= 0) continue;
 
@@ -268,8 +358,7 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
       const fLast = SHOPEE_FAIXAS[SHOPEE_FAIXAS.length - 1];
       let pct = fLast.comissao + extraCamp;
       let fix = fLast.taxaFixa + extraCPF;
-      let pixSub = (shopeePix && fLast.subsidioPixPct) ? fLast.subsidioPixPct : 0;
-      const pctVar = (pct + numCupom + numAfil + numAds + numImp - pixSub) / 100;
+      const pctVar = (pct + numCupom + numAfil + numAds + numImp) / 100;
       const denom = 1 - (pctVar + targetPct / 100);
       return denom > 0 ? (numCusto + numEmb + fix) / denom : 0;
     };
@@ -320,13 +409,15 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
       let pctVar1 = (comm1 + fsPct + numAfil + numAds + numImp) / 100;
       let denom1 = 1 - (pctVar1 + targetPct / 100);
       let p1 = denom1 > 0 ? (numCusto + numEmb + 4.00) / denom1 : 0;
-      if (p1 > 0 && p1 < 50.00) return p1;
+      if (p1 > 0 && p1 < 50.00 && (numPreco === 0 || numPreco < 50.00)) return p1;
 
       let comm2 = tikTokIsencao ? 0 : 6.0;
       let pctVar2 = (comm2 + fsPct + numAfil + numAds + numImp) / 100;
       let denom2 = 1 - (pctVar2 + targetPct / 100);
       let p2 = denom2 > 0 ? (numCusto + numEmb + 6.00) / denom2 : 0;
-      return p2;
+      if (p2 >= 50.00) return p2;
+      if (p1 > 0 && p1 < 50.00) return p1;
+      return p2 > 0 ? p2 : p1;
     };
 
     const precoBreak = computeTikTokPriceForMarg(0);
@@ -338,27 +429,158 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
     };
   };
 
+  // ============================================================
+  // CÁLCULO AMAZON BRASIL
+  // ============================================================
+  const calcAmazon = () => {
+    const cat = AMAZON_CATEGORIAS[amazonCategoria] || AMAZON_CATEGORIAS[0];
+    const pctComissao = cat.comissao;
+    const taxaFixaPlano = amazonPlano === 'individual' ? 2.00 : 0.00;
+    const numAds = parseBRL(amazonAds);
+
+    let freteRow = AMAZON_FRETE_DBA[amazonFreteIdx] || AMAZON_FRETE_DBA[0];
+    let custoFrete = 0;
+    if (amazonLogistica === 'dba') {
+      custoFrete = freteRow.valor;
+    } else if (amazonLogistica === 'fba') {
+      // FBA inclui armazenagem e manuseio no CD (+R$ 2,50 padrão)
+      custoFrete = freteRow.valor + 2.50;
+    } else {
+      custoFrete = parseBRL(amazonFreteCustom);
+    }
+
+    // Comissão mínima de R$ 1,00 por item vendido na Amazon
+    const calcComissaoBruta = (numPreco * pctComissao) / 100;
+    const valorComissao = numPreco > 0 ? Math.max(1.00, Number(calcComissaoBruta.toFixed(2))) : 0;
+    const valorTaxaFixa = Number(taxaFixaPlano.toFixed(2));
+    const valorFrete = Number(custoFrete.toFixed(2));
+    const valorImposto = Number(((numPreco * numImp) / 100).toFixed(2));
+    const valorAds = Number(((numPreco * numAds) / 100).toFixed(2));
+
+    const totalCustos = Number((valorComissao + valorTaxaFixa + valorFrete + valorImposto + numEmb + numCusto + valorAds).toFixed(2));
+    const lucro = numPreco > 0 ? Number((numPreco - totalCustos).toFixed(2)) : 0;
+    const margemPct = numPreco > 0 ? (lucro / numPreco) * 100 : 0;
+
+    const computeAmazonPriceForMarg = (targetPct) => {
+      if (numCusto === 0 && numEmb === 0) return 0;
+      const pctVar = (pctComissao + numImp + numAds + targetPct) / 100;
+      const denom = 1 - pctVar;
+      if (denom <= 0) return 0;
+
+      const custoFixo = numCusto + numEmb + taxaFixaPlano + custoFrete;
+      const pCalculated = custoFixo / denom;
+      // Checar se comissão mínima de R$ 1,00 prevalece
+      if (pCalculated * (pctComissao / 100) < 1.00) {
+        const denomMin = 1 - ((numImp + numAds + targetPct) / 100);
+        return denomMin > 0 ? (custoFixo + 1.00) / denomMin : 0;
+      }
+      return pCalculated;
+    };
+
+    const precoBreak = computeAmazonPriceForMarg(0);
+    const precoMargAlvo = computeAmazonPriceForMarg(numMargAlvo);
+
+    return {
+      cat, pctComissao, valorComissao, taxaFixa: valorTaxaFixa, custoFrete: valorFrete,
+      valorImposto, valorAds, totalCustos, lucro, margemPct,
+      precoBreak, precoMargAlvo, freteRow
+    };
+  };
+
+  // ============================================================
+  // CÁLCULO SHEIN BRASIL
+  // ============================================================
+  const calcShein = () => {
+    const cat = SHEIN_CATEGORIAS[sheinCategoria] || SHEIN_CATEGORIAS[0];
+    const pctComissao = sheinIsencao ? 0.0 : cat.comissao;
+    const freteRow = SHEIN_FRETE[sheinFreteIdx] || SHEIN_FRETE[0];
+    const custoFrete = sheinSubsidioFrete ? 0.00 : freteRow.valor;
+
+    const numCupom = parseBRL(sheinCupom);
+    const numAfil = parseBRL(sheinAfiliado);
+
+    const valorComissao = Number(((numPreco * pctComissao) / 100).toFixed(2));
+    const valorFrete = Number(custoFrete.toFixed(2));
+    const valorCupom = Number(((numPreco * numCupom) / 100).toFixed(2));
+    const valorAfil = Number(((numPreco * numAfil) / 100).toFixed(2));
+    const valorImposto = Number(((numPreco * numImp) / 100).toFixed(2));
+    const valorTaxaFixa = 0.00; // Shein não cobra taxa fixa por unidade vendida
+
+    const totalCustos = Number((valorComissao + valorTaxaFixa + valorFrete + valorCupom + valorAfil + valorImposto + numEmb + numCusto).toFixed(2));
+    const lucro = numPreco > 0 ? Number((numPreco - totalCustos).toFixed(2)) : 0;
+    const margemPct = numPreco > 0 ? (lucro / numPreco) * 100 : 0;
+
+    const computeSheinPriceForMarg = (targetPct) => {
+      if (numCusto === 0 && numEmb === 0) return 0;
+      const pctVar = (pctComissao + numCupom + numAfil + numImp + targetPct) / 100;
+      const denom = 1 - pctVar;
+      if (denom <= 0) return 0;
+      const custoFixo = numCusto + numEmb + custoFrete;
+      return custoFixo / denom;
+    };
+
+    const precoBreak = computeSheinPriceForMarg(0);
+    const precoMargAlvo = computeSheinPriceForMarg(numMargAlvo);
+
+    return {
+      cat, pctComissao, valorComissao, taxaFixa: valorTaxaFixa, custoFrete: valorFrete,
+      valorCupom, valorAfil, valorImposto, totalCustos, lucro, margemPct,
+      precoBreak, precoMargAlvo, freteRow
+    };
+  };
+
   const ml = calcML();
   const sh = calcShopee();
   const tk = calcTikTok();
+  const az = calcAmazon();
+  const sn = calcShein();
 
-  const res = mp === 'tiktok' ? tk : (mp === 'shopee' ? sh : ml);
+  const res = 
+    mp === 'amazon' ? az : 
+    mp === 'shein' ? sn : 
+    mp === 'tiktok' ? tk : 
+    mp === 'shopee' ? sh : ml;
   
-  // Clean channel name without "Brasil" suffix for badge display
-  const channelBadgeLabel = mp === 'tiktok' ? 'TIKTOK SHOP' : (mp === 'shopee' ? 'SHOPEE' : 'MERCADO LIVRE');
-  const channelLabel = mp === 'tiktok' ? 'TikTok Shop' : (mp === 'shopee' ? 'Shopee' : 'Mercado Livre');
+  // Clean channel name for badge display
+  const channelBadgeLabel = 
+    mp === 'amazon' ? 'AMAZON BRASIL' : 
+    mp === 'shein' ? 'SHEIN BRASIL' : 
+    mp === 'tiktok' ? 'TIKTOK SHOP' : 
+    mp === 'shopee' ? 'SHOPEE' : 'MERCADO LIVRE';
+
+  const channelLabel = 
+    mp === 'amazon' ? 'Amazon Brasil' : 
+    mp === 'shein' ? 'Shein Brasil' : 
+    mp === 'tiktok' ? 'TikTok Shop' : 
+    mp === 'shopee' ? 'Shopee' : 'Mercado Livre';
   
-  const accent = mp === 'tiktok' ? 'var(--tiktok-cyan)' : (mp === 'shopee' ? 'var(--shopee-orange)' : 'var(--ml-yellow)');
-  const accentBg = mp === 'tiktok' ? 'var(--tiktok-cyan-bg)' : (mp === 'shopee' ? 'var(--shopee-orange-bg)' : 'var(--ml-yellow-bg)');
-  const accentBorder = mp === 'tiktok' ? 'var(--tiktok-cyan-border)' : (mp === 'shopee' ? 'var(--shopee-orange-border)' : 'var(--ml-yellow-border)');
+  const accent = 
+    mp === 'amazon' ? 'var(--amazon-orange)' : 
+    mp === 'shein' ? 'var(--shein-pink)' : 
+    mp === 'tiktok' ? 'var(--tiktok-cyan)' : 
+    mp === 'shopee' ? 'var(--shopee-orange)' : 'var(--ml-yellow)';
+
+  const accentBg = 
+    mp === 'amazon' ? 'var(--amazon-orange-bg)' : 
+    mp === 'shein' ? 'var(--shein-pink-bg)' : 
+    mp === 'tiktok' ? 'var(--tiktok-cyan-bg)' : 
+    mp === 'shopee' ? 'var(--shopee-orange-bg)' : 'var(--ml-yellow-bg)';
+
+  const accentBorder = 
+    mp === 'amazon' ? 'var(--amazon-orange-border)' : 
+    mp === 'shein' ? 'var(--shein-pink-border)' : 
+    mp === 'tiktok' ? 'var(--tiktok-cyan-border)' : 
+    mp === 'shopee' ? 'var(--shopee-orange-border)' : 'var(--ml-yellow-border)';
+
+  const isMargemAtingida = numMargAlvo > 0 && (res.margemPct >= (numMargAlvo - 0.05) || Math.abs(numPreco - res.precoMargAlvo) <= 0.05);
 
   const margemColor = numPreco === 0
     ? 'var(--text-secondary)'
-    : res.margemPct >= numMargAlvo && numMargAlvo > 0
-    ? 'var(--success)' : res.margemPct >= 10
+    : isMargemAtingida
+    ? 'var(--success)' : res.margemPct >= 9.95
     ? 'var(--warning)' : 'var(--danger)';
 
-  const margemIcon = res.margemPct >= numMargAlvo && numMargAlvo > 0 ? '✅' : res.margemPct >= 10 ? '⚠️' : '🚨';
+  const margemIcon = isMargemAtingida ? '✅' : res.margemPct >= 9.95 ? '⚠️' : '🚨';
 
   const handleApplySuggestedPrice = (sugPrice) => {
     if (sugPrice > 0) {
@@ -394,8 +616,8 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
             <h2 style={{ marginTop: '0.4rem' }}>Calculadora de Precificação &amp; Margem Real</h2>
             <p>Precifique com exatidão matemática considerando todas as taxas e regras vigentes de 2026.</p>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end' }}>
-            <div className="segmented-control" style={{ maxWidth: '380px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end', width: '100%', maxWidth: '620px' }}>
+            <div className="segmented-control">
               <button type="button" className={`seg-btn seg-btn-ml ${mp === 'ml' ? 'active' : ''}`} onClick={() => handleMpChange('ml')}>
                 <Zap size={14} /> ML
               </button>
@@ -404,6 +626,12 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
               </button>
               <button type="button" className={`seg-btn seg-btn-tiktok ${mp === 'tiktok' ? 'active' : ''}`} onClick={() => handleMpChange('tiktok')}>
                 <Video size={14} /> TikTok Shop
+              </button>
+              <button type="button" className={`seg-btn seg-btn-amazon ${mp === 'amazon' ? 'active' : ''}`} onClick={() => handleMpChange('amazon')}>
+                <Package size={14} /> Amazon
+              </button>
+              <button type="button" className={`seg-btn seg-btn-shein ${mp === 'shein' ? 'active' : ''}`} onClick={() => handleMpChange('shein')}>
+                <Shirt size={14} /> Shein
               </button>
             </div>
             {onSaveSimulation && (
@@ -583,6 +811,147 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
                 )}
               </div>
             </div>
+          ) : mp === 'amazon' ? (
+            <div className="card">
+              <div className="card-header">
+                <h3>⚙️ Configurações Amazon Brasil</h3>
+                <p style={{ fontSize: '0.78rem', marginTop: '0.2rem', color: 'var(--text-muted)' }}>
+                  Comissões por Categoria (Piso R$ 1,00) e Logística Integrada DBA / FBA
+                </p>
+              </div>
+
+              <div style={{ padding: '0.75rem', background: 'var(--amazon-orange-bg)', border: '1px solid var(--amazon-orange-border)', borderRadius: 'var(--radius-sm)', marginBottom: '0.85rem' }}>
+                <div style={{ fontSize: '0.78rem', color: 'var(--amazon-orange)', fontWeight: 700, marginBottom: '0.3rem' }}>
+                  REGRA APLICADA PARA O PREÇO DE R$ {numPreco.toFixed(2)}
+                </div>
+                <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>
+                  Comissão: {az.pctComissao}% ({formatBRL(az.valorComissao)}) {numPreco > 0 && ((numPreco * az.pctComissao) / 100 < 1.00) ? '— Piso mínimo de R$ 1,00 aplicado' : ''}
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+                  {amazonPlano === 'individual' ? 'Plano Individual (+R$ 2,00 por item vendido)' : 'Plano Profissional (Sem taxa fixa por item)'} • Logística: {amazonLogistica === 'dba' ? `DBA Envio (${formatBRL(az.custoFrete)})` : amazonLogistica === 'fba' ? `FBA Fulfillment (${formatBRL(az.custoFrete)})` : 'Logística Própria'}
+                </div>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                <label>Categoria do Produto na Amazon</label>
+                <select className="select-input" value={amazonCategoria} onChange={e => setAmazonCategoria(Number(e.target.value))}>
+                  {AMAZON_CATEGORIAS.map((c, i) => (
+                    <option key={i} value={i}>{c.label} ({c.comissao}%)</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                <label>Plano de Venda Amazon</label>
+                <select className="select-input" value={amazonPlano} onChange={e => setAmazonPlano(e.target.value)}>
+                  <option value="pro">Plano Profissional (R$ 19/mês — Isento da taxa de R$ 2,00 por item)</option>
+                  <option value="individual">Plano Individual (+R$ 2,00 taxa fixa por item vendido)</option>
+                </select>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                <label>Modal Logístico / Envio</label>
+                <select className="select-input" value={amazonLogistica} onChange={e => setAmazonLogistica(e.target.value)}>
+                  <option value="dba">DBA — Delivery by Amazon (Coleta e entrega pela rede Amazon)</option>
+                  <option value="fba">FBA — Fulfillment by Amazon (Armazenado e expedido pelo CD Amazon)</option>
+                  <option value="proprio">Logística Própria (Correios / Transportadora do vendedor)</option>
+                </select>
+              </div>
+
+              {amazonLogistica !== 'proprio' ? (
+                <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                  <label>Faixa de Peso do Pacote ({amazonLogistica === 'dba' ? 'Tabela Oficial DBA' : 'Tabela Oficial FBA'})</label>
+                  <select className="select-input" value={amazonFreteIdx} onChange={e => setAmazonFreteIdx(Number(e.target.value))}>
+                    {AMAZON_FRETE_DBA.map((f, i) => (
+                      <option key={i} value={i}>{f.label} — {formatBRL(amazonLogistica === 'fba' ? f.valor + 2.50 : f.valor)}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                  <label>Custo de Frete Próprio por Envio (R$)</label>
+                  <FormattedInput type="currency" id="amazonFreteCustom" value={amazonFreteCustom}
+                    onChange={e => setAmazonFreteCustom(e.target.value)}
+                    placeholder="Ex: 15,00" />
+                </div>
+              )}
+
+              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                <label>Amazon Ads — ACOS Estimado (%)</label>
+                <FormattedInput type="decimal" id="amazonAds" value={amazonAds}
+                  onChange={e => setAmazonAds(e.target.value)}
+                  placeholder="Ex: 10,0" />
+              </div>
+            </div>
+          ) : mp === 'shein' ? (
+            <div className="card">
+              <div className="card-header">
+                <h3>⚙️ Configurações Shein Brasil</h3>
+                <p style={{ fontSize: '0.78rem', marginTop: '0.2rem', color: 'var(--text-muted)' }}>
+                  Moda Feminina (20%) | Demais Categorias (18%) | Sem Tarifa Fixa por Item
+                </p>
+              </div>
+
+              <div style={{ padding: '0.75rem', background: 'var(--shein-pink-bg)', border: '1px solid var(--shein-pink-border)', borderRadius: 'var(--radius-sm)', marginBottom: '0.85rem' }}>
+                <div style={{ fontSize: '0.78rem', color: 'var(--shein-pink)', fontWeight: 700, marginBottom: '0.3rem' }}>
+                  REGRA APLICADA PARA O PREÇO DE R$ {numPreco.toFixed(2)}
+                </div>
+                <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>
+                  Comissão: {sn.pctComissao}% + Tarifa Fixa por Item: R$ 0,00 (Gratuito)
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+                  {sheinIsencao ? '✨ Isenção 0% Primeiros 30 Dias Ativa' : `Categoria: ${sn.cat.label} (${sn.cat.comissao}%)`} • Frete: {sheinSubsidioFrete ? '100% Subsidiado pela Shein (R$ 0,00)' : formatBRL(sn.custoFrete)}
+                </div>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                <label>Categoria do Produto Shein</label>
+                <select className="select-input" value={sheinCategoria} onChange={e => setSheinCategoria(Number(e.target.value))}>
+                  {SHEIN_CATEGORIAS.map((c, i) => (
+                    <option key={i} value={i}>{c.label} ({c.comissao}%)</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                <label>Faixa de Peso do Pacote (Coleta Integrada Shein)</label>
+                <select className="select-input" value={sheinFreteIdx} onChange={e => setSheinFreteIdx(Number(e.target.value))}>
+                  {SHEIN_FRETE.map((f, i) => (
+                    <option key={i} value={i}>{f.label} — {formatBRL(f.valor)}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                <label>Cupom da Loja Patrocinado pelo Vendedor (%)</label>
+                <FormattedInput type="decimal" id="sheinCupom" value={sheinCupom}
+                  onChange={e => setSheinCupom(e.target.value)}
+                  placeholder="Ex: 5,0" />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                <label>Programa de Afiliados / Criadores Shein (%)</label>
+                <FormattedInput type="decimal" id="sheinAfiliado" value={sheinAfiliado}
+                  onChange={e => setSheinAfiliado(e.target.value)}
+                  placeholder="Ex: 8,0" />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                  <input type="checkbox" id="shein_subsidio" checked={sheinSubsidioFrete} onChange={e => setSheinSubsidioFrete(e.target.checked)} style={{ width: 16, height: 16, cursor: 'pointer' }} />
+                  <label htmlFor="shein_subsidio" style={{ fontSize: '0.85rem', cursor: 'pointer', margin: 0 }}>
+                    Frete 100% Subsidiado pela Shein na Campanha (Isenção de Frete ao Vendedor)
+                  </label>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                  <input type="checkbox" id="shein_isencao" checked={sheinIsencao} onChange={e => setSheinIsencao(e.target.checked)} style={{ width: 16, height: 16, cursor: 'pointer' }} />
+                  <label htmlFor="shein_isencao" style={{ fontSize: '0.85rem', cursor: 'pointer', margin: 0 }}>
+                    Benefício Novos Vendedores Shein (0% de comissão nos primeiros 30 dias)
+                  </label>
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="card">
               <div className="card-header">
@@ -706,42 +1075,93 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
                 <div
                   className="progress-bar-fill"
                   style={{
-                    width: `${Math.min(100, Math.max(0, (res.margemPct / (numMargAlvo || 1)) * 100))}%`,
+                    width: `${Math.min(100, Math.max(0, isMargemAtingida ? 100 : (res.margemPct / (numMargAlvo || 1)) * 100))}%`,
                     background: margemColor
                   }}
                 />
               </div>
             </div>
 
-            {/* Status Alert Banner */}
+            {/* Status Alert Banner & Smart Target Margin Recommendation */}
             <div style={{
               padding: '0.85rem 1rem',
               borderRadius: 'var(--radius-sm)',
-              background: res.margemPct >= numMargAlvo && numMargAlvo > 0 ? 'var(--success-bg)' : res.margemPct >= 10 ? 'var(--warning-bg)' : 'var(--danger-bg)',
-              border: `1px solid ${res.margemPct >= numMargAlvo && numMargAlvo > 0 ? 'var(--success-border)' : res.margemPct >= 10 ? 'var(--warning-border)' : 'var(--danger-border)'}`,
+              background: isMargemAtingida ? 'var(--success-bg)' : res.margemPct >= 9.95 ? 'var(--warning-bg)' : 'var(--danger-bg)',
+              border: `1px solid ${isMargemAtingida ? 'var(--success-border)' : res.margemPct >= 9.95 ? 'var(--warning-border)' : 'var(--danger-border)'}`,
               marginBottom: '0.85rem'
             }}>
-              <div style={{ fontWeight: 700, fontSize: '0.88rem', marginBottom: '0.3rem', color: margemColor }}>
+              <div style={{ fontWeight: 700, fontSize: '0.88rem', marginBottom: '0.2rem', color: margemColor }}>
                 {numPreco === 0
-                  ? '💡 Digite o Custo e o Preço de Venda para calcular a margem real'
+                  ? (numMargAlvo > 0 && res.precoMargAlvo > 0
+                      ? `💡 Sugestão Pronta: preço de ${formatBRL(res.precoMargAlvo)} para ${formatPct(numMargAlvo)} de margem líquida`
+                      : '💡 Digite o Custo e o Preço de Venda para calcular a margem real')
+                  : Math.abs(numPreco - res.precoMargAlvo) <= 0.05 && numMargAlvo > 0
+                  ? `✅ Excelente! O preço de ${formatBRL(numPreco)} atingiu exatamente a sua margem alvo de ${formatPct(numMargAlvo)}`
                   : res.margemPct >= numMargAlvo && numMargAlvo > 0
-                  ? `✅ Excelente! O preço de R$ ${numPreco.toFixed(2)} atingiu a margem alvo de ${formatPct(numMargAlvo)}`
-                  : res.margemPct >= 10
+                  ? `✅ Margem Atual: ${formatPct(res.margemPct)} (Supera a margem alvo configurada de ${formatPct(numMargAlvo)})`
+                  : res.margemPct >= 9.95
                   ? `⚠️ Margem de ${formatPct(res.margemPct)} está abaixo do alvo de ${formatPct(numMargAlvo)}`
                   : `🚨 Risco de prejuízo! Margem de apenas ${formatPct(res.margemPct)}`}
               </div>
 
-              {res.margemPct < numMargAlvo && res.precoMargAlvo > 0 && (
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-                  <span>Para atingir {formatPct(numMargAlvo)} de margem, o preço sugerido é <strong>{formatBRL(res.precoMargAlvo)}</strong></span>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    style={{ fontSize: '0.74rem', padding: '0.3rem 0.6rem' }}
-                    onClick={() => handleApplySuggestedPrice(res.precoMargAlvo)}
-                  >
-                    Aplicar {formatBRL(res.precoMargAlvo)}
-                  </button>
+              {/* Caixa de Sugestão e Recálculo da Margem Alvo — SEMPRE VISÍVEL quando houver Margem Alvo e Preço Calculado */}
+              {numMargAlvo > 0 && res.precoMargAlvo > 0 && (
+                <div style={{
+                  fontSize: '0.82rem',
+                  color: 'var(--text-secondary)',
+                  marginTop: '0.5rem',
+                  paddingTop: '0.5rem',
+                  borderTop: '1px solid rgba(255, 255, 255, 0.1)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  flexWrap: 'wrap',
+                  gap: '0.5rem'
+                }}>
+                  <div>
+                    {Math.abs(numPreco - res.precoMargAlvo) <= 0.02 ? (
+                      <span style={{ color: 'var(--success)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                        <CheckCircle size={14} /> Preço ideal de <strong>{formatBRL(res.precoMargAlvo)}</strong> já está ativo no simulador.
+                      </span>
+                    ) : res.margemPct > numMargAlvo ? (
+                      <span>
+                        💡 Para fixar exatamente <strong>{formatPct(numMargAlvo)}</strong> de margem e ter um preço mais competitivo no {channelLabel}: preço sugerido <strong>{formatBRL(res.precoMargAlvo)}</strong>
+                      </span>
+                    ) : (
+                      <span>
+                        🎯 Para atingir os <strong>{formatPct(numMargAlvo)}</strong> de margem alvo desejada: preço sugerido <strong>{formatBRL(res.precoMargAlvo)}</strong>
+                      </span>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                    {Math.abs(numPreco - res.precoMargAlvo) > 0.02 ? (
+                      <button
+                        type="button"
+                        className="btn btn-primary"
+                        style={{ fontSize: '0.74rem', padding: '0.3rem 0.65rem', minHeight: 'unset' }}
+                        onClick={() => handleApplySuggestedPrice(res.precoMargAlvo)}
+                      >
+                        Aplicar {formatBRL(res.precoMargAlvo)}
+                      </button>
+                    ) : (
+                      <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', borderRadius: '4px', background: 'var(--success-bg)', color: 'var(--success)', fontWeight: 700, border: '1px solid var(--success-border)' }}>
+                        ✓ Alvo Ativo
+                      </span>
+                    )}
+
+                    {res.precoBreak > 0 && Math.abs(numPreco - res.precoBreak) > 0.02 && (
+                      <button
+                        type="button"
+                        className="btn btn-outline"
+                        style={{ fontSize: '0.72rem', padding: '0.25rem 0.5rem', minHeight: 'unset' }}
+                        title="Preço mínimo para cobrir custos e taxas (0% de margem)"
+                        onClick={() => handleApplySuggestedPrice(res.precoBreak)}
+                      >
+                        Breakeven: {formatBRL(res.precoBreak)}
+                      </button>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -774,7 +1194,66 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
                 <span>− {formatBRL(res.valorImposto)}</span>
               </div>
 
-              {mp === 'tiktok' ? (
+              {mp === 'amazon' ? (
+                <>
+                  <div className="dre-row" style={{ color: 'var(--danger)' }}>
+                    <span>(−) Comissão Amazon ({res.pctComissao}%):</span>
+                    <span>− {formatBRL(res.valorComissao)}</span>
+                  </div>
+                  {res.taxaFixa > 0 && (
+                    <div className="dre-row" style={{ color: 'var(--danger)' }}>
+                      <span>(−) Tarifa por Item Vendido (Plano Individual):</span>
+                      <span>− {formatBRL(res.taxaFixa)}</span>
+                    </div>
+                  )}
+                  {res.custoFrete > 0 && (
+                    <div className="dre-row" style={{ color: 'var(--danger)' }}>
+                      <span>(−) Custo Logístico de Frete ({amazonLogistica.toUpperCase()}):</span>
+                      <span>− {formatBRL(res.custoFrete)}</span>
+                    </div>
+                  )}
+                  {res.valorAds > 0 && (
+                    <div className="dre-row" style={{ color: 'var(--danger)' }}>
+                      <span>(−) Amazon Ads ({parseBRL(amazonAds)}%):</span>
+                      <span>− {formatBRL(res.valorAds)}</span>
+                    </div>
+                  )}
+                </>
+              ) : mp === 'shein' ? (
+                <>
+                  <div className="dre-row" style={{ color: 'var(--danger)' }}>
+                    <span>(−) Comissão Shein ({res.pctComissao}%):</span>
+                    <span>− {formatBRL(res.valorComissao)}</span>
+                  </div>
+                  <div className="dre-row" style={{ color: 'var(--text-muted)' }}>
+                    <span>(−) Tarifa Fixa por Item:</span>
+                    <span style={{ color: 'var(--success)' }}>R$ 0,00 (Isento)</span>
+                  </div>
+                  {res.custoFrete > 0 ? (
+                    <div className="dre-row" style={{ color: 'var(--danger)' }}>
+                      <span>(−) Envio / Coleta Integrada Shein:</span>
+                      <span>− {formatBRL(res.custoFrete)}</span>
+                    </div>
+                  ) : (
+                    <div className="dre-row" style={{ color: 'var(--text-muted)' }}>
+                      <span>Frete ao Vendedor:</span>
+                      <span style={{ color: 'var(--success)' }}>R$ 0,00 (100% Subsidiado)</span>
+                    </div>
+                  )}
+                  {res.valorCupom > 0 && (
+                    <div className="dre-row" style={{ color: 'var(--danger)' }}>
+                      <span>(−) Cupom da Loja ({parseBRL(sheinCupom)}%):</span>
+                      <span>− {formatBRL(res.valorCupom)}</span>
+                    </div>
+                  )}
+                  {res.valorAfil > 0 && (
+                    <div className="dre-row" style={{ color: 'var(--danger)' }}>
+                      <span>(−) Afiliados Shein ({parseBRL(sheinAfiliado)}%):</span>
+                      <span>− {formatBRL(res.valorAfil)}</span>
+                    </div>
+                  )}
+                </>
+              ) : mp === 'tiktok' ? (
                 <>
                   <div className="dre-row" style={{ color: 'var(--danger)' }}>
                     <span>(−) Comissão Base TikTok ({res.pctComissao}%):</span>
@@ -832,9 +1311,9 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
                     </div>
                   )}
                   {res.subsidioPixValor > 0 && (
-                    <div className="dre-row" style={{ color: 'var(--success)' }}>
-                      <span>(+) Subsídio PIX Shopee ({sh.faixa?.subsidioPixPct}%):</span>
-                      <span>+ {formatBRL(res.subsidioPixValor)}</span>
+                    <div className="dre-row" style={{ color: 'var(--text-muted)' }}>
+                      <span>Desconto PIX ao Comprador ({sh.faixa?.subsidioPixPct}%):</span>
+                      <span style={{ color: 'var(--success)' }}>{formatBRL(res.subsidioPixValor)} (Subsidiado pela Shopee)</span>
                     </div>
                   )}
                 </>

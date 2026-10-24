@@ -69,7 +69,7 @@ export default function App() {
       </main>
 
       <footer style={{ marginTop: '2.5rem', textAlign: 'center', fontSize: '0.78rem', color: 'var(--text-muted)', borderTop: '1px solid var(--border-subtle)', paddingTop: '1.25rem' }}>
-        <p><strong>Gravity Calculadora</strong> — Precificação Financeira Auditada para Mercado Livre, Shopee e TikTok Shop — Regras Oficiais 2026.</p>
+        <p><strong>Gravity Calculadora</strong> — Precificação Financeira Auditada para Mercado Livre, Shopee, TikTok Shop, Amazon e Shein — Regras Oficiais 2026.</p>
       </footer>
 
       <SavedSimulationsModal

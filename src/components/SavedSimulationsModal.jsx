@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bookmark, Trash2, FileSpreadsheet, Printer, X, Zap, ShoppingBag, Video } from 'lucide-react';
+import { Bookmark, Trash2, FileSpreadsheet, Printer, X, Zap, ShoppingBag, Video, Package, Shirt } from 'lucide-react';
 import { formatBRL, formatPct } from './PricingCalculator';
 
 export default function SavedSimulationsModal({ isOpen, onClose, savedList, onDeleteSimulation, onClearAll }) {
@@ -10,16 +10,25 @@ export default function SavedSimulationsModal({ isOpen, onClose, savedList, onDe
 
     const headers = ["Data", "Identificação", "Marketplace", "Preço Venda (R$)", "CMV (R$)", "Lucro Líquido (R$)", "Margem Líquida (%)", "Preço Alvo Sugerido (R$)"];
     
-    const rows = savedList.map(item => [
-      `"${item.date || ''}"`,
-      `"${(item.title || '').replace(/"/g, '""')}"`,
-      `"${item.marketplace === 'shopee' ? 'Shopee' : item.marketplace === 'tiktok' ? 'TikTok Shop' : 'Mercado Livre'}"`,
-      `"${(item.precoVenda || 0).toFixed(2).replace('.', ',')}"`,
-      `"${(item.custoProd || 0).toFixed(2).replace('.', ',')}"`,
-      `"${(item.lucro || 0).toFixed(2).replace('.', ',')}"`,
-      `"${(item.margemPct || 0).toFixed(2).replace('.', ',')}%"`,
-      `"${(item.precoMargAlvo || 0).toFixed(2).replace('.', ',')}"`
-    ]);
+    const rows = savedList.map(item => {
+      const mpName = 
+        item.marketplace === 'amazon' ? 'Amazon Brasil' :
+        item.marketplace === 'shein' ? 'Shein Brasil' :
+        item.marketplace === 'shopee' ? 'Shopee' :
+        item.marketplace === 'tiktok' ? 'TikTok Shop' :
+        item.marketplace === 'consolidado' ? 'Consolidado' : 'Mercado Livre';
+
+      return [
+        `"${item.date || ''}"`,
+        `"${(item.title || '').replace(/"/g, '""')}"`,
+        `"${mpName}"`,
+        `"${(item.precoVenda || 0).toFixed(2).replace('.', ',')}"`,
+        `"${(item.custoProd || 0).toFixed(2).replace('.', ',')}"`,
+        `"${(item.lucro || 0).toFixed(2).replace('.', ',')}"`,
+        `"${(item.margemPct || 0).toFixed(2).replace('.', ',')}%"`,
+        `"${(item.precoMargAlvo || 0).toFixed(2).replace('.', ',')}"`
+      ];
+    });
 
     const csvContent = "\uFEFF" + [headers.join(";"), ...rows.map(e => e.join(";"))].join("\n");
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -37,8 +46,11 @@ export default function SavedSimulationsModal({ isOpen, onClose, savedList, onDe
   };
 
   const getMpBadge = (mp) => {
+    if (mp === 'amazon') return <span className="badge badge-amazon"><Package size={11} /> Amazon</span>;
+    if (mp === 'shein') return <span className="badge badge-shein"><Shirt size={11} /> Shein</span>;
     if (mp === 'shopee') return <span className="badge badge-shopee"><ShoppingBag size={11} /> Shopee</span>;
     if (mp === 'tiktok') return <span className="badge badge-tiktok"><Video size={11} /> TikTok</span>;
+    if (mp === 'consolidado') return <span className="badge badge-success">Consolidado</span>;
     return <span className="badge badge-ml"><Zap size={11} /> ML</span>;
   };
 
