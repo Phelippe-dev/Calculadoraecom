@@ -1,5 +1,6 @@
 import React from 'react';
 import { Calculator, BarChart3, TrendingUp, BookOpen, Bookmark, Printer, Sparkles, ExternalLink, MessageSquare } from 'lucide-react';
+import logoGravity from '../assets/Logo Gravity.png';
 
 export default function Header({ activeTab, setActiveTab, savedCount, onOpenSavedModal }) {
   const handlePrint = () => {
@@ -9,6 +10,11 @@ export default function Header({ activeTab, setActiveTab, savedCount, onOpenSave
   return (
     <header className="header-bar">
       <div className="brand-title">
+        <img
+          src={logoGravity}
+          alt="Gravity Tech Logo"
+          className="brand-logo"
+        />
         <div className="brand-text">
           <h1>Gravity Calculadora <Sparkles size={16} style={{ color: '#A855F7' }} /></h1>
         </div>
