@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calculator, BarChart3, TrendingUp, BookOpen, Bookmark, Printer, Sparkles } from 'lucide-react';
+import { Calculator, BarChart3, TrendingUp, BookOpen, Bookmark, Printer, Sparkles, ExternalLink, MessageSquare } from 'lucide-react';
 
 export default function Header({ activeTab, setActiveTab, savedCount, onOpenSavedModal }) {
   const handlePrint = () => {
@@ -45,7 +45,25 @@ export default function Header({ activeTab, setActiveTab, savedCount, onOpenSave
         </button>
       </nav>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+        <a
+          href="https://gravitytech.web.app/#contato"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-outline no-print"
+          style={{ 
+            fontSize: '0.78rem', 
+            padding: '0.5rem 0.85rem', 
+            textDecoration: 'none',
+            color: '#38BDF8',
+            borderColor: 'rgba(56, 189, 248, 0.4)',
+            background: 'rgba(56, 189, 248, 0.08)'
+          }}
+          title="Falar com a Gravity Tech — Desenvolver Sistemas e Automações"
+        >
+          <MessageSquare size={13} /> Fale Conosco <ExternalLink size={11} />
+        </a>
+
         <button
           type="button"
           className="btn btn-secondary"
