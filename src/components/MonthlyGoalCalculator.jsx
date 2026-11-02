@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { 
   TrendingUp, Calendar, Bookmark, FileSpreadsheet, 
-  Printer, Zap, ShoppingBag, Video, Package, Shirt, Store, RotateCcw
+  Printer, Zap, ShoppingBag, Video, Package, Shirt, Store, RotateCcw,
+  Calculator, Check, X, Sparkles
 } from 'lucide-react';
 import FormattedInput from './FormattedInput';
 import { parseBRL, formatBRL, formatPct } from './PricingCalculator';
@@ -29,6 +30,178 @@ function StatusBadge({ proj }) {
   );
 }
 
+// Modal Interativo para Ajudar o Lojista a Descobrir sua Margem Média Real
+function MarginHelperModal({ isOpen, onClose, mpKey, mpTitle, mpColor, onApply }) {
+  const getDefaultComissao = () => {
+    switch (mpKey) {
+      case 'ml': return '14,0';
+      case 'shopee': return '14,0';
+      case 'tiktok': return '12,0';
+      case 'amazon': return '14,0';
+      case 'shein': return '16,0';
+      case 'temu': return '12,0';
+      default: return '14,0';
+    }
+  };
+
+  const [ticketMedio, setTicketMedio] = useState('100,00');
+  const [custoProduto, setCustoProduto] = useState('42,00');
+  const [impostoPct, setImpostoPct] = useState('6,0');
+  const [comissaoPct, setComissaoPct] = useState(getDefaultComissao());
+  const [custoExtra, setCustoExtra] = useState('5,00');
+
+  if (!isOpen) return null;
+
+  const preco = parseBRL(ticketMedio) || 100;
+  const custo = parseBRL(custoProduto) || 0;
+  const imposto = parseBRL(impostoPct) || 0;
+  const comissao = parseBRL(comissaoPct) || 0;
+  const extra = parseBRL(custoExtra) || 0;
+
+  const impostoR$ = (preco * imposto) / 100;
+  const comissaoR$ = (preco * comissao) / 100;
+  const custosTotais = custo + impostoR$ + comissaoR$ + extra;
+  const lucroLiquido = Math.max(0, preco - custosTotais);
+  const margemLiquidaPct = preco > 0 ? (lucroLiquido / preco) * 100 : 0;
+  const margemStrResult = margemLiquidaPct.toFixed(1).replace('.', ',');
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '580px', border: `1px solid ${mpColor || '#A855F7'}60` }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem', borderBottom: '1px solid var(--border-subtle)', paddingBottom: '0.75rem' }}>
+          <div>
+            <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Calculator size={18} style={{ color: mpColor || '#A855F7' }} />
+              Calculadora de Margem Média: {mpTitle}
+            </h3>
+            <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.78rem', color: 'var(--text-secondary)' }}>
+              Simule um produto ou pedido médio do seu negócio para descobrir a margem líquida real que sobra no seu bolso.
+            </p>
+          </div>
+          <button type="button" onClick={onClose} style={{ background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', padding: '0.25rem' }}>
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Inputs */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.85rem', marginBottom: '1rem' }}>
+          <div>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2rem' }}>
+              Preço Médio de Venda (R$)
+            </label>
+            <FormattedInput type="currency" value={ticketMedio} onChange={e => setTicketMedio(e.target.value)} placeholder="100,00" />
+            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Ticket médio que o cliente paga</span>
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2rem' }}>
+              Custo do Produto (CMV) (R$)
+            </label>
+            <FormattedInput type="currency" value={custoProduto} onChange={e => setCustoProduto(e.target.value)} placeholder="40,00" />
+            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Custo pago ao fabricante/fornecedor</span>
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2rem' }}>
+              Imposto de Venda (%)
+            </label>
+            <FormattedInput type="decimal" value={impostoPct} onChange={e => setImpostoPct(e.target.value)} placeholder="6,0" />
+            <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.25rem' }}>
+              <button type="button" className="chip-btn" onClick={() => setImpostoPct('0,0')}>MEI (0%)</button>
+              <button type="button" className="chip-btn" onClick={() => setImpostoPct('4,0')}>Simples (4%)</button>
+              <button type="button" className="chip-btn" onClick={() => setImpostoPct('6,0')}>Simples (6%)</button>
+            </div>
+          </div>
+
+          <div>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2rem' }}>
+              Comissão do Marketplace (%)
+            </label>
+            <FormattedInput type="decimal" value={comissaoPct} onChange={e => setComissaoPct(e.target.value)} placeholder="14,0" />
+            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Comissão padrão cobrada pelo canal</span>
+          </div>
+
+          <div style={{ gridColumn: 'span 2' }}>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', display: 'block', marginBottom: '0.2rem' }}>
+              Custo Operacional Extra / Envio (R$)
+            </label>
+            <FormattedInput type="currency" value={custoExtra} onChange={e => setCustoExtra(e.target.value)} placeholder="5,00" />
+            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Embalagem, etiqueta, fita ou coparticipação média de frete</span>
+          </div>
+        </div>
+
+        {/* Mini DRE explicativo */}
+        <div style={{ background: 'rgba(0,0,0,0.3)', border: '1px solid var(--border-subtle)', borderRadius: 'var(--radius-sm)', padding: '0.85rem', marginBottom: '1.25rem' }}>
+          <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', marginBottom: '0.4rem', fontWeight: 700 }}>
+            Resultado por Pedido Médio:
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.82rem', marginBottom: '0.25rem' }}>
+            <span>(+) Preço de Venda:</span>
+            <strong>{formatBRL(preco)}</strong>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--danger)', marginBottom: '0.2rem' }}>
+            <span>(−) Custo da Mercadoria:</span>
+            <span>-{formatBRL(custo)}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--danger)', marginBottom: '0.2rem' }}>
+            <span>(−) Imposto ({imposto}%):</span>
+            <span>-{formatBRL(impostoR$)}</span>
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--danger)', marginBottom: '0.2rem' }}>
+            <span>(−) Comissão Canal ({comissao}%):</span>
+            <span>-{formatBRL(comissaoR$)}</span>
+          </div>
+          {extra > 0 && (
+            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--danger)', marginBottom: '0.2rem' }}>
+              <span>(−) Embalagem / Custos Extras:</span>
+              <span>-{formatBRL(extra)}</span>
+            </div>
+          )}
+
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem', paddingTop: '0.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            <div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Lucro Líquido Real / Pedido:</span>
+              <div style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--success)' }}>
+                {formatBRL(lucroLiquido)}
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Sua Margem Líquida Resultante:</span>
+              <div style={{ fontSize: '1.45rem', fontWeight: 800, color: '#38BDF8' }}>
+                {margemStrResult}%
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <button type="button" className="btn btn-outline" onClick={onClose} style={{ fontSize: '0.8rem', padding: '0.55rem 1rem' }}>
+            Cancelar
+          </button>
+          <button 
+            type="button" 
+            className="btn btn-secondary" 
+            onClick={() => { onApply(margemStrResult, true); onClose(); }}
+            style={{ fontSize: '0.8rem', padding: '0.55rem 1rem' }}
+            title="Aplica esta mesma porcentagem de margem nos 6 marketplaces"
+          >
+            Aplicar em Todos ({margemStrResult}%)
+          </button>
+          <button 
+            type="button" 
+            className="btn btn-primary" 
+            onClick={() => { onApply(margemStrResult, false); onClose(); }}
+            style={{ fontSize: '0.8rem', padding: '0.55rem 1.25rem' }}
+          >
+            <Check size={14} /> Aplicar {margemStrResult}% no {mpTitle}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function MarketplaceCard({
   title,
   icon,
@@ -41,7 +214,10 @@ function MarketplaceCard({
   fatStr,
   margemStr,
   metaStr,
-  diasRestantes
+  diasRestantes,
+  mpKey,
+  onOpenMarginHelper,
+  savedMargin
 }) {
   return (
     <div style={{ border: `1px solid ${color}40`, borderRadius: 'var(--radius-md)', padding: '1rem', background: accentBg, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
@@ -53,19 +229,77 @@ function MarketplaceCard({
           <StatusBadge proj={proj} />
         </div>
         
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.6rem', marginBottom: '1rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.75rem', marginBottom: '1rem' }}>
           <div>
-            <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.2rem', display: 'block' }}>Faturado Até Hoje (R$)</label>
+            <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.2rem', display: 'block' }}>
+              Faturado Até Hoje (R$)
+            </label>
             <FormattedInput type="currency" value={fatStr} onChange={e => setFat(e.target.value)} placeholder="0,00" />
+            <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Vendas realizadas neste mês</span>
           </div>
+
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.6rem' }}>
             <div>
-              <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.2rem', display: 'block' }}>Margem Média (%)</label>
-              <FormattedInput type="decimal" value={margemStr} onChange={e => setMargem(e.target.value)} placeholder="0,0" />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.2rem' }}>
+                <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                  Margem Líquida (%)
+                </label>
+                <button
+                  type="button"
+                  onClick={() => onOpenMarginHelper(mpKey, title, color)}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: '#C084FC',
+                    fontSize: '0.72rem',
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '0.2rem',
+                    padding: 0,
+                    fontWeight: 700
+                  }}
+                  title="Calcular margem média com base no preço, custos e comissão"
+                >
+                  <Calculator size={11} /> Calcular
+                </button>
+              </div>
+
+              <FormattedInput type="decimal" value={margemStr} onChange={e => setMargem(e.target.value)} placeholder="Ex: 18,0" />
+
+              {/* Quick Preset Chips */}
+              <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.35rem', flexWrap: 'wrap' }}>
+                {['12', '16', '20', '25'].map(val => (
+                  <button
+                    key={val}
+                    type="button"
+                    className={`chip-btn ${margemStr === val || margemStr === `${val},0` ? 'active' : ''}`}
+                    onClick={() => setMargem(`${val},0`)}
+                    title={`Definir margem média de ${val}%`}
+                  >
+                    {val}%
+                  </button>
+                ))}
+                {savedMargin && (
+                  <button
+                    type="button"
+                    className="chip-btn"
+                    style={{ borderColor: 'rgba(16, 185, 129, 0.4)', color: '#10B981' }}
+                    onClick={() => setMargem(savedMargin)}
+                    title="Usar média calculada nas suas simulações salvas"
+                  >
+                    Salvo: {savedMargin}%
+                  </button>
+                )}
+              </div>
             </div>
+
             <div>
-              <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.2rem', display: 'block' }}>Meta Mensal (R$)</label>
+              <label style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '0.2rem', display: 'block' }}>
+                Meta Mensal (R$)
+              </label>
               <FormattedInput type="currency" value={metaStr} onChange={e => setMeta(e.target.value)} placeholder="Opcional" />
+              <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>Alvo de vendas para o mês</span>
             </div>
           </div>
         </div>
@@ -85,9 +319,19 @@ function MarketplaceCard({
           {formatBRL(proj.projecaoFinal)}
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.8rem', paddingTop: '0.4rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.8rem', paddingTop: '0.4rem', borderTop: '1px solid rgba(255,255,255,0.08)' }}>
           <span style={{ color: 'var(--text-secondary)' }}>Lucro Projetado:</span>
-          <strong style={{ color: 'var(--success)' }}>{formatBRL(proj.lucroFinal)}</strong>
+          {proj.margem > 0 ? (
+            <strong style={{ color: 'var(--success)' }}>
+              {formatBRL(proj.lucroFinal)} <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>({proj.margem.toFixed(1)}%)</span>
+            </strong>
+          ) : proj.fat > 0 ? (
+            <span style={{ color: '#F59E0B', fontSize: '0.72rem', fontWeight: 600 }}>
+              Defina a margem acima (ex: 18%)
+            </span>
+          ) : (
+            <strong style={{ color: 'var(--text-muted)' }}>R$ 0,00</strong>
+          )}
         </div>
 
         {/* Ritmo Diário */}
@@ -110,6 +354,14 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
   const [diasNoMes, setDiasNoMes] = useState('31');
   const [curvaSazonalidade, setCurvaSazonalidade] = useState('dia20_forte');
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  // Estado do Modal Assistente de Margem
+  const [helperModal, setHelperModal] = useState({
+    isOpen: false,
+    mpKey: 'ml',
+    title: 'Mercado Livre',
+    color: '#FBBF24'
+  });
 
   // Dados por Marketplace
   const [fatML, setFatML] = useState('');
@@ -159,6 +411,78 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
     setFatAmazon(''); setMargemAmazon(''); setMetaAmazon('');
     setFatShein(''); setMargemShein(''); setMetaShein('');
     setFatTemu(''); setMargemTemu(''); setMetaTemu('');
+  };
+
+  // Funções Auxiliares de Margem
+  const handleOpenMarginHelper = (mpKey, title, color) => {
+    setHelperModal({ isOpen: true, mpKey, title, color });
+  };
+
+  const handleApplyAllMargins = (val) => {
+    setMargemML(val);
+    setMargemShopee(val);
+    setMargemTikTok(val);
+    setMargemAmazon(val);
+    setMargemShein(val);
+    setMargemTemu(val);
+  };
+
+  const handleApplyMarginFromHelper = (valStr, applyAll) => {
+    if (applyAll) {
+      handleApplyAllMargins(valStr);
+    } else {
+      switch (helperModal.mpKey) {
+        case 'ml': setMargemML(valStr); break;
+        case 'shopee': setMargemShopee(valStr); break;
+        case 'tiktok': setMargemTikTok(valStr); break;
+        case 'amazon': setMargemAmazon(valStr); break;
+        case 'shein': setMargemShein(valStr); break;
+        case 'temu': setMargemTemu(valStr); break;
+        default: break;
+      }
+    }
+  };
+
+  const getSavedMarginFor = (mp) => {
+    try {
+      const raw = localStorage.getItem('gravity_simulations');
+      if (!raw) return null;
+      const list = JSON.parse(raw);
+      if (!Array.isArray(list)) return null;
+      const matches = list.filter(it => it.marketplace === mp && typeof it.margemPct === 'number' && it.margemPct > 0);
+      if (matches.length === 0) return null;
+      const avg = matches.reduce((acc, it) => acc + it.margemPct, 0) / matches.length;
+      return avg.toFixed(1).replace('.', ',');
+    } catch {
+      return null;
+    }
+  };
+
+  const hasAnySavedSimulations = () => {
+    try {
+      const raw = localStorage.getItem('gravity_simulations');
+      if (!raw) return false;
+      const list = JSON.parse(raw);
+      return Array.isArray(list) && list.length > 0;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleImportSavedMargins = () => {
+    const ml = getSavedMarginFor('ml');
+    const sh = getSavedMarginFor('shopee');
+    const tk = getSavedMarginFor('tiktok');
+    const az = getSavedMarginFor('amazon');
+    const sn = getSavedMarginFor('shein');
+    const tm = getSavedMarginFor('temu');
+
+    if (ml) setMargemML(ml);
+    if (sh) setMargemShopee(sh);
+    if (tk) setMargemTikTok(tk);
+    if (az) setMargemAmazon(az);
+    if (sn) setMargemShein(sn);
+    if (tm) setMargemTemu(tm);
   };
 
   // Fatores Sazonais
@@ -299,7 +623,7 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
               PLANEJAMENTO &amp; PROJEÇÃO 2026
             </span>
             <h2 style={{ marginTop: '0.4rem' }}>Painel de Projeção &amp; Metas Multi-Canal</h2>
-            <p>Acompanhe o ritmo diário das vendas, compare com suas metas e projete o fechamento de caixa agrupando Mercado Livre, Shopee e TikTok Shop.</p>
+            <p>Acompanhe o ritmo diário das vendas, compare com suas metas e projete o fechamento de caixa agrupando os 6 principais marketplaces.</p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <button 
@@ -323,6 +647,75 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         
+        {/* GUIA DIDÁTICO: O QUE É E COMO USAR A MARGEM MÉDIA */}
+        <div className="card" style={{ background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.08) 0%, rgba(6, 182, 212, 0.06) 100%)', border: '1px solid rgba(168, 85, 247, 0.35)', padding: '1.25rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '0.85rem', marginBottom: '0.85rem' }}>
+            <div>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', color: '#C084FC', fontSize: '0.74rem', fontWeight: 700, textTransform: 'uppercase', marginBottom: '0.3rem' }}>
+                <Sparkles size={14} /> Entenda e Domine a Margem Média
+              </div>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', color: 'var(--text-primary)' }}>
+                Como preencher e o que é a Margem Média (%)?
+              </h3>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="chip-btn"
+                style={{ padding: '0.4rem 0.85rem', fontSize: '0.76rem', borderColor: 'rgba(168, 85, 247, 0.45)', color: '#C084FC', background: 'rgba(168, 85, 247, 0.12)' }}
+                onClick={() => handleApplyAllMargins('16,0')}
+                title="Aplica margem padrão de 16% em todos os marketplaces"
+              >
+                ⚡ Preencher Todos c/ Margem Padrão (16%)
+              </button>
+              <button
+                type="button"
+                className="chip-btn"
+                style={{ padding: '0.4rem 0.85rem', fontSize: '0.76rem', borderColor: 'rgba(56, 189, 248, 0.45)', color: '#38BDF8', background: 'rgba(56, 189, 248, 0.12)' }}
+                onClick={() => handleApplyAllMargins('20,0')}
+                title="Aplica margem saudável de 20% em todos os marketplaces"
+              >
+                ⚡ Margem Saudável (20%)
+              </button>
+              {hasAnySavedSimulations() && (
+                <button
+                  type="button"
+                  className="chip-btn"
+                  style={{ padding: '0.4rem 0.85rem', fontSize: '0.76rem', borderColor: 'rgba(16, 185, 129, 0.45)', color: '#10B981', background: 'rgba(16, 185, 129, 0.12)' }}
+                  onClick={handleImportSavedMargins}
+                  title="Puxar as médias reais dos produtos já calculados e salvos"
+                >
+                  📂 Puxar do Meu Histórico Salvo
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.85rem', fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
+            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '0.85rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'var(--text-primary)', fontWeight: 700, marginBottom: '0.25rem' }}>
+                <span style={{ color: '#FBBF24' }}>①</span> O que colocar em Faturado?
+              </div>
+              É o valor bruto total vendido até o dia atual no mês. Você encontra esse valor no topo do painel de cada marketplace ou ERP.
+            </div>
+
+            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '0.85rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#38BDF8', fontWeight: 700, marginBottom: '0.25rem' }}>
+                <span>②</span> O que é a Margem Média (%)?
+              </div>
+              É a fatia da venda que <strong>vira lucro limpo no seu bolso</strong> após pagar o fornecedor, comissão do canal, frete e imposto. Se não souber, use os chips rápidos (12%, 16%, 20%) ou clique em <strong>"Calcular"</strong> em cada card.
+            </div>
+
+            <div style={{ background: 'rgba(0,0,0,0.3)', padding: '0.85rem', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#10B981', fontWeight: 700, marginBottom: '0.25rem' }}>
+                <span>③</span> Como o Lucro é Projetado?
+              </div>
+              A fórmula multiplica sua Projeção Final de Faturamento pela Margem Média. Exemplo: R$ 50.000 de faturamento com 18% de margem = <strong>R$ 9.000 de lucro líquido</strong>.
+            </div>
+          </div>
+        </div>
+
         {/* PARÂMETROS GLOBAIS DE TEMPO */}
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -389,36 +782,54 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
             proj={projML} setFat={setFatML} setMargem={setMargemML} setMeta={setMetaML}
             fatStr={fatML} margemStr={margemML} metaStr={metaML}
             diasRestantes={diasRestantes}
+            mpKey="ml"
+            onOpenMarginHelper={handleOpenMarginHelper}
+            savedMargin={getSavedMarginFor('ml')}
           />
           <MarketplaceCard 
             title="Shopee" icon={<ShoppingBag size={18} />} color="#F97316" accentBg="rgba(249, 115, 22, 0.05)"
             proj={projShopee} setFat={setFatShopee} setMargem={setMargemShopee} setMeta={setMetaShopee}
             fatStr={fatShopee} margemStr={margemShopee} metaStr={metaShopee}
             diasRestantes={diasRestantes}
+            mpKey="shopee"
+            onOpenMarginHelper={handleOpenMarginHelper}
+            savedMargin={getSavedMarginFor('shopee')}
           />
           <MarketplaceCard 
             title="TikTok Shop" icon={<Video size={18} />} color="#06B6D4" accentBg="rgba(6, 182, 212, 0.05)"
             proj={projTikTok} setFat={setFatTikTok} setMargem={setMargemTikTok} setMeta={setMetaTikTok}
             fatStr={fatTikTok} margemStr={margemTikTok} metaStr={metaTikTok}
             diasRestantes={diasRestantes}
+            mpKey="tiktok"
+            onOpenMarginHelper={handleOpenMarginHelper}
+            savedMargin={getSavedMarginFor('tiktok')}
           />
           <MarketplaceCard 
             title="Amazon Brasil" icon={<Package size={18} />} color="#FF9900" accentBg="rgba(255, 153, 0, 0.05)"
             proj={projAmazon} setFat={setFatAmazon} setMargem={setMargemAmazon} setMeta={setMetaAmazon}
             fatStr={fatAmazon} margemStr={margemAmazon} metaStr={metaAmazon}
             diasRestantes={diasRestantes}
+            mpKey="amazon"
+            onOpenMarginHelper={handleOpenMarginHelper}
+            savedMargin={getSavedMarginFor('amazon')}
           />
           <MarketplaceCard 
             title="Shein Brasil" icon={<Shirt size={18} />} color="#FF007A" accentBg="rgba(255, 0, 122, 0.05)"
             proj={projShein} setFat={setFatShein} setMargem={setMargemShein} setMeta={setMetaShein}
             fatStr={fatShein} margemStr={margemShein} metaStr={metaShein}
             diasRestantes={diasRestantes}
+            mpKey="shein"
+            onOpenMarginHelper={handleOpenMarginHelper}
+            savedMargin={getSavedMarginFor('shein')}
           />
           <MarketplaceCard 
             title="Temu Brasil" icon={<Store size={18} />} color="#FA6400" accentBg="rgba(250, 100, 0, 0.05)"
             proj={projTemu} setFat={setFatTemu} setMargem={setMargemTemu} setMeta={setMetaTemu}
             fatStr={fatTemu} margemStr={margemTemu} metaStr={metaTemu}
             diasRestantes={diasRestantes}
+            mpKey="temu"
+            onOpenMarginHelper={handleOpenMarginHelper}
+            savedMargin={getSavedMarginFor('temu')}
           />
         </div>
 
@@ -567,6 +978,15 @@ export default function MonthlyGoalCalculator({ onSaveSimulation }) {
           </div>
         </div>
 
+        {/* Modal Interativo de Cálculo de Margem */}
+        <MarginHelperModal
+          isOpen={helperModal.isOpen}
+          onClose={() => setHelperModal(prev => ({ ...prev, isOpen: false }))}
+          mpKey={helperModal.mpKey}
+          mpTitle={helperModal.title}
+          mpColor={helperModal.color}
+          onApply={handleApplyMarginFromHelper}
+        />
       </div>
     </div>
   );

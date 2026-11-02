@@ -594,6 +594,36 @@ body {
   border: 1px solid var(--success-border);
 }
 
+/* Quick Selection Chips */
+.chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: var(--radius-pill);
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.chip-btn:hover {
+  background: rgba(168, 85, 247, 0.16);
+  color: #C084FC;
+  border-color: rgba(168, 85, 247, 0.4);
+}
+
+.chip-btn.active {
+  background: #A855F7;
+  color: #FFFFFF;
+  border-color: #A855F7;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.4);
+}
+
 /* Action Buttons */
 .btn {
   display: inline-flex;
