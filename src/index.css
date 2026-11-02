@@ -62,6 +62,13 @@
   --shein-pink-border: rgba(255, 0, 122, 0.35);
   --shein-pink-glow: rgba(255, 0, 122, 0.25);
 
+  /* Temu Brasil - Laranja Vibrante */
+  --temu-orange: #FA6400;
+  --temu-orange-hover: #FF7A1A;
+  --temu-orange-bg: rgba(250, 100, 0, 0.12);
+  --temu-orange-border: rgba(250, 100, 0, 0.35);
+  --temu-orange-glow: rgba(250, 100, 0, 0.25);
+
   /* Purple Theme Token for Navigation Tabs */
   --purple-main: #A855F7;
   --purple-hover: #C084FC;
@@ -128,6 +135,15 @@
   --accent-bg: rgba(255, 0, 122, 0.15);
   --accent-border: rgba(255, 0, 122, 0.45);
   --accent-glow: rgba(255, 0, 122, 0.35);
+  --accent-text: #FFFFFF;
+}
+
+[data-theme="temu"] {
+  --accent: #FA6400;
+  --accent-hover: #FF7A1A;
+  --accent-bg: rgba(250, 100, 0, 0.15);
+  --accent-border: rgba(250, 100, 0, 0.45);
+  --accent-glow: rgba(250, 100, 0, 0.35);
   --accent-text: #FFFFFF;
 }
 
@@ -322,6 +338,13 @@ body {
   color: #FFFFFF !important;
   font-weight: 800 !important;
   box-shadow: 0 2px 12px rgba(255, 0, 122, 0.45) !important;
+}
+
+.seg-btn-temu.active {
+  background: #FA6400 !important;
+  color: #FFFFFF !important;
+  font-weight: 800 !important;
+  box-shadow: 0 2px 12px rgba(250, 100, 0, 0.45) !important;
 }
 
 /* Cards & Layout */
@@ -541,6 +564,12 @@ body {
   background: var(--shein-pink-bg);
   color: var(--shein-pink);
   border: 1px solid var(--shein-pink-border);
+}
+
+.badge-temu {
+  background: var(--temu-orange-bg);
+  color: var(--temu-orange);
+  border: 1px solid var(--temu-orange-border);
 }
 
 .badge-success {

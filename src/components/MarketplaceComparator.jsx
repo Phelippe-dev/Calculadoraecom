@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Award, Zap, ShoppingBag, Video, Package, Shirt, DollarSign, AlertTriangle } from 'lucide-react';
+import { Award, Zap, ShoppingBag, Video, Package, Shirt, Store, DollarSign, AlertTriangle } from 'lucide-react';
 import FormattedInput from './FormattedInput';
 import { 
   SHOPEE_FAIXAS, parseBRL, formatBRL, formatPct, 
-  ML_CATEGORIAS, AMAZON_CATEGORIAS, SHEIN_CATEGORIAS 
+  ML_CATEGORIAS, AMAZON_CATEGORIAS, SHEIN_CATEGORIAS, TEMU_CATEGORIAS 
 } from './PricingCalculator';
 
 export default function MarketplaceComparator() {
@@ -18,6 +18,7 @@ export default function MarketplaceComparator() {
   const [mlTipoAnuncio, setMlTipoAnuncio] = useState('premium');
   const [amazonCategoria, setAmazonCategoria] = useState(0);
   const [sheinCategoria, setSheinCategoria] = useState(0);
+  const [temuCategoria, setTemuCategoria] = useState(0);
 
   const numPreco = parseBRL(precoVenda);
   const numCusto = parseBRL(custoProd);
@@ -183,9 +184,39 @@ export default function MarketplaceComparator() {
     };
   };
 
-  const results = [calcML(), calcShopee(), calcTikTok(), calcAmazon(), calcShein()];
+  // 6. Temu Brasil Calculation (Local-to-Local, Envio 300g-500g R$ 14,50, Provisão Devoluções 3%, Sem taxa fixa)
+  const calcTemu = () => {
+    const cat = TEMU_CATEGORIAS[temuCategoria] || TEMU_CATEGORIAS[0];
+    const pctComissao = cat.comissao;
+    const freteTemu = 14.50; // Faixa padrão 300g a 500g
+    const provisaoDevolucao = (numPreco * 3.0) / 100; // Provisão recomendada 3% para políticas da Temu
 
-  // Find winner (highest profit among all 5 marketplaces)
+    const valorComissao = (numPreco * pctComissao) / 100;
+    const valorImposto = (numPreco * numImp) / 100;
+    const totalCustos = valorComissao + freteTemu + provisaoDevolucao + valorImposto + numEmb + numCusto;
+    const lucro = numPreco > 0 ? numPreco - totalCustos : 0;
+    const margemPct = numPreco > 0 ? (lucro / numPreco) * 100 : 0;
+
+    return {
+      key: 'temu',
+      name: 'Temu Brasil',
+      badgeClass: 'badge-temu',
+      accentColor: 'var(--temu-orange)',
+      accentBg: 'var(--temu-orange-bg)',
+      icon: <Store size={18} style={{ color: 'var(--temu-orange)' }} />,
+      pctComissao,
+      taxasPlataforma: valorComissao + freteTemu + provisaoDevolucao,
+      valorImposto,
+      totalCustos,
+      lucro,
+      margemPct,
+      detalheTaxas: `${cat.label}: ${pctComissao}% (Sem Taxa Fixa) + Frete ${formatBRL(freteTemu)} + 3% Devolução`
+    };
+  };
+
+  const results = [calcML(), calcShopee(), calcTikTok(), calcAmazon(), calcShein(), calcTemu()];
+
+  // Find winner (highest profit among all 6 marketplaces)
   const winner = results.reduce((max, curr) => curr.lucro > max.lucro ? curr : max, results[0]);
 
   return (
@@ -195,10 +226,10 @@ export default function MarketplaceComparator() {
         <div className="card-header flex-header">
           <div>
             <span className="badge badge-success">
-              MATRIZ COMPARATIVA DE MARGEM &amp; LUCRO LADO A LADO (5 MARKETPLACES)
+              MATRIZ COMPARATIVA DE MARGEM &amp; LUCRO LADO A LADO (6 MARKETPLACES)
             </span>
             <h2 style={{ marginTop: '0.4rem' }}>Comparador Multi-Marketplace Simultâneo</h2>
-            <p>Compare as margens reais entre Mercado Livre, Shopee, TikTok Shop, Amazon e Shein para o mesmo produto.</p>
+            <p>Compare as margens reais entre Mercado Livre, Shopee, TikTok Shop, Amazon, Shein e Temu para o mesmo produto.</p>
           </div>
         </div>
       </div>
@@ -291,6 +322,17 @@ export default function MarketplaceComparator() {
             </label>
             <select className="select-input" value={sheinCategoria} onChange={e => setSheinCategoria(Number(e.target.value))}>
               {SHEIN_CATEGORIAS.map((c, i) => (
+                <option key={i} value={i}>{c.label} ({c.comissao}%)</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--temu-orange)', marginBottom: '0.3rem', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <Store size={14} /> Categoria Temu Brasil
+            </label>
+            <select className="select-input" value={temuCategoria} onChange={e => setTemuCategoria(Number(e.target.value))}>
+              {TEMU_CATEGORIAS.map((c, i) => (
                 <option key={i} value={i}>{c.label} ({c.comissao}%)</option>
               ))}
             </select>

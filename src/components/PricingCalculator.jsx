@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calculator, TrendingUp, Zap, ShoppingBag, Video, Package, Shirt, Bookmark, CheckCircle } from 'lucide-react';
+import { Calculator, TrendingUp, Zap, ShoppingBag, Video, Package, Shirt, Store, Bookmark, CheckCircle } from 'lucide-react';
 import FormattedInput from './FormattedInput';
 
 // ============================================================
@@ -149,6 +149,30 @@ export const SHEIN_FRETE = [
   { label: 'Acima de 2kg', pesoMax: 999, valor: 27.00 },
 ];
 
+// ============================================================
+// TABELAS OFICIAIS 2026 — TEMU BRASIL
+// Fonte: Temu Seller Center Brasil (Programa de Vendedores Locais / Local-to-Local)
+// ============================================================
+export const TEMU_CATEGORIAS = [
+  { label: 'Moda, Roupas e Vestuário', comissao: 15.0 },
+  { label: 'Calçados, Malas e Bolsas', comissao: 14.0 },
+  { label: 'Casa, Cozinha e Decoração', comissao: 12.0 },
+  { label: 'Beleza, Saúde e Cuidados Pessoais', comissao: 14.0 },
+  { label: 'Eletrônicos e Acessórios', comissao: 10.0 },
+  { label: 'Brinquedos, Jogos e Bebês', comissao: 12.0 },
+  { label: 'Esportes, Lazer e Ar Livre', comissao: 12.0 },
+  { label: 'Ferramentas, Automotivo e Pets', comissao: 12.0 },
+  { label: 'Outras Categorias Gerais', comissao: 12.0 },
+];
+
+export const TEMU_FRETE = [
+  { label: 'Até 300g', pesoMax: 0.3, valor: 12.00 },
+  { label: '300g a 500g', pesoMax: 0.5, valor: 14.50 },
+  { label: '500g a 1kg', pesoMax: 1.0, valor: 17.00 },
+  { label: '1kg a 2kg', pesoMax: 2.0, valor: 21.00 },
+  { label: 'Acima de 2kg', pesoMax: 999, valor: 28.00 },
+];
+
 export const formatBRL = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
 export const formatPct = (v) => `${(v || 0).toFixed(2).replace('.', ',')}%`;
 
@@ -214,6 +238,16 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
   const [sheinIsencao, setSheinIsencao] = useState(false);    // 0% comissão por 30 dias
   const [sheinCupom, setSheinCupom] = useState('');
   const [sheinAfiliado, setSheinAfiliado] = useState('');
+
+  // Campos Temu Brasil (Local-to-Local)
+  const [temuCategoria, setTemuCategoria] = useState(0);
+  const [temuFreteIdx, setTemuFreteIdx] = useState(1);        // 300g a 500g
+  const [temuLogistica, setTemuLogistica] = useState('integrada'); // 'integrada', 'subsidio', 'proprio'
+  const [temuFreteCustom, setTemuFreteCustom] = useState('');
+  const [temuIsencao, setTemuIsencao] = useState(false);      // 0% comissão promocional (Campanha Lançamento)
+  const [temuDevolucao, setTemuDevolucao] = useState('3,0');  // Reserva recomendada para devoluções/reembolsos rígidos Temu
+  const [temuCupom, setTemuCupom] = useState('');
+  const [temuAds, setTemuAds] = useState('');
 
   useEffect(() => {
     if (currentMarketplace) {
@@ -529,13 +563,67 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
     };
   };
 
+  // ============================================================
+  // CÁLCULO TEMU BRASIL (LOCAL-TO-LOCAL)
+  // ============================================================
+  const calcTemu = () => {
+    const cat = TEMU_CATEGORIAS[temuCategoria] || TEMU_CATEGORIAS[0];
+    const pctComissao = temuIsencao ? 0.0 : cat.comissao;
+    const freteRow = TEMU_FRETE[temuFreteIdx] || TEMU_FRETE[0];
+
+    let custoFrete = 0;
+    if (temuLogistica === 'integrada') {
+      custoFrete = freteRow.valor;
+    } else if (temuLogistica === 'subsidio') {
+      custoFrete = 0.00;
+    } else {
+      custoFrete = parseBRL(temuFreteCustom);
+    }
+
+    const numDevolucao = parseBRL(temuDevolucao);
+    const numCupom = parseBRL(temuCupom);
+    const numAds = parseBRL(temuAds);
+
+    const valorComissao = Number(((numPreco * pctComissao) / 100).toFixed(2));
+    const valorFrete = Number(custoFrete.toFixed(2));
+    const valorDevolucao = Number(((numPreco * numDevolucao) / 100).toFixed(2));
+    const valorCupom = Number(((numPreco * numCupom) / 100).toFixed(2));
+    const valorAds = Number(((numPreco * numAds) / 100).toFixed(2));
+    const valorImposto = Number(((numPreco * numImp) / 100).toFixed(2));
+    const valorTaxaFixa = 0.00; // Temu não cobra taxa fixa por item vendido
+
+    const totalCustos = Number((valorComissao + valorTaxaFixa + valorFrete + valorDevolucao + valorCupom + valorAds + valorImposto + numEmb + numCusto).toFixed(2));
+    const lucro = numPreco > 0 ? Number((numPreco - totalCustos).toFixed(2)) : 0;
+    const margemPct = numPreco > 0 ? (lucro / numPreco) * 100 : 0;
+
+    const computeTemuPriceForMarg = (targetPct) => {
+      if (numCusto === 0 && numEmb === 0) return 0;
+      const pctVar = (pctComissao + numDevolucao + numCupom + numAds + numImp + targetPct) / 100;
+      const denom = 1 - pctVar;
+      if (denom <= 0) return 0;
+      const custoFixo = numCusto + numEmb + custoFrete;
+      return custoFixo / denom;
+    };
+
+    const precoBreak = computeTemuPriceForMarg(0);
+    const precoMargAlvo = computeTemuPriceForMarg(numMargAlvo);
+
+    return {
+      cat, pctComissao, valorComissao, taxaFixa: valorTaxaFixa, custoFrete: valorFrete,
+      valorDevolucao, valorCupom, valorAds, valorImposto, totalCustos, lucro, margemPct,
+      precoBreak, precoMargAlvo, freteRow
+    };
+  };
+
   const ml = calcML();
   const sh = calcShopee();
   const tk = calcTikTok();
   const az = calcAmazon();
   const sn = calcShein();
+  const tm = calcTemu();
 
   const res = 
+    mp === 'temu' ? tm :
     mp === 'amazon' ? az : 
     mp === 'shein' ? sn : 
     mp === 'tiktok' ? tk : 
@@ -543,30 +631,35 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
   
   // Clean channel name for badge display
   const channelBadgeLabel = 
+    mp === 'temu' ? 'TEMU BRASIL' :
     mp === 'amazon' ? 'AMAZON BRASIL' : 
     mp === 'shein' ? 'SHEIN BRASIL' : 
     mp === 'tiktok' ? 'TIKTOK SHOP' : 
     mp === 'shopee' ? 'SHOPEE' : 'MERCADO LIVRE';
 
   const channelLabel = 
+    mp === 'temu' ? 'Temu Brasil' :
     mp === 'amazon' ? 'Amazon Brasil' : 
     mp === 'shein' ? 'Shein Brasil' : 
     mp === 'tiktok' ? 'TikTok Shop' : 
     mp === 'shopee' ? 'Shopee' : 'Mercado Livre';
   
   const accent = 
+    mp === 'temu' ? 'var(--temu-orange)' :
     mp === 'amazon' ? 'var(--amazon-orange)' : 
     mp === 'shein' ? 'var(--shein-pink)' : 
     mp === 'tiktok' ? 'var(--tiktok-cyan)' : 
     mp === 'shopee' ? 'var(--shopee-orange)' : 'var(--ml-yellow)';
 
   const accentBg = 
+    mp === 'temu' ? 'var(--temu-orange-bg)' :
     mp === 'amazon' ? 'var(--amazon-orange-bg)' : 
     mp === 'shein' ? 'var(--shein-pink-bg)' : 
     mp === 'tiktok' ? 'var(--tiktok-cyan-bg)' : 
     mp === 'shopee' ? 'var(--shopee-orange-bg)' : 'var(--ml-yellow-bg)';
 
   const accentBorder = 
+    mp === 'temu' ? 'var(--temu-orange-border)' :
     mp === 'amazon' ? 'var(--amazon-orange-border)' : 
     mp === 'shein' ? 'var(--shein-pink-border)' : 
     mp === 'tiktok' ? 'var(--tiktok-cyan-border)' : 
@@ -616,7 +709,7 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
             <h2 style={{ marginTop: '0.4rem' }}>Calculadora de Precificação &amp; Margem Real</h2>
             <p>Precifique com exatidão matemática considerando todas as taxas e regras vigentes de 2026.</p>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end', width: '100%', maxWidth: '620px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end', width: '100%', maxWidth: '720px' }}>
             <div className="segmented-control">
               <button type="button" className={`seg-btn seg-btn-ml ${mp === 'ml' ? 'active' : ''}`} onClick={() => handleMpChange('ml')}>
                 <Zap size={14} /> ML
@@ -632,6 +725,9 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
               </button>
               <button type="button" className={`seg-btn seg-btn-shein ${mp === 'shein' ? 'active' : ''}`} onClick={() => handleMpChange('shein')}>
                 <Shirt size={14} /> Shein
+              </button>
+              <button type="button" className={`seg-btn seg-btn-temu ${mp === 'temu' ? 'active' : ''}`} onClick={() => handleMpChange('temu')}>
+                <Store size={14} /> Temu
               </button>
             </div>
             {onSaveSimulation && (
@@ -952,6 +1048,96 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
                 </div>
               </div>
             </div>
+          ) : mp === 'temu' ? (
+            <div className="card">
+              <div className="card-header">
+                <h3>⚙️ Configurações Temu Brasil</h3>
+                <p style={{ fontSize: '0.78rem', marginTop: '0.2rem', color: 'var(--text-muted)' }}>
+                  Programa de Vendedores Locais (Local-to-Local) | Sem Tarifa Fixa por Item | Estoque no Brasil
+                </p>
+              </div>
+
+              <div style={{ padding: '0.75rem', background: 'var(--temu-orange-bg)', border: '1px solid var(--temu-orange-border)', borderRadius: 'var(--radius-sm)', marginBottom: '0.85rem' }}>
+                <div style={{ fontSize: '0.78rem', color: 'var(--temu-orange)', fontWeight: 700, marginBottom: '0.3rem' }}>
+                  REGRA APLICADA PARA O PREÇO DE R$ {numPreco.toFixed(2)}
+                </div>
+                <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>
+                  Comissão: {tm.pctComissao}% + Tarifa Fixa por Item: R$ 0,00 (Gratuito)
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+                  {temuIsencao ? '✨ Campanha Lançamento Temu (0% Comissão Ativa)' : `Categoria: ${tm.cat.label} (${tm.cat.comissao}%)`} • Frete: {temuLogistica === 'subsidio' ? '100% Subsidiado pela Temu (R$ 0,00)' : formatBRL(tm.custoFrete)}
+                </div>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                <label>Categoria do Produto na Temu</label>
+                <select className="select-input" value={temuCategoria} onChange={e => setTemuCategoria(Number(e.target.value))}>
+                  {TEMU_CATEGORIAS.map((c, i) => (
+                    <option key={i} value={i}>{c.label} ({c.comissao}%)</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                <label>Modal Logístico / Envio Temu Local</label>
+                <select className="select-input" value={temuLogistica} onChange={e => setTemuLogistica(e.target.value)}>
+                  <option value="integrada">Logística Local Integrada Temu (Transportadora Parceira por Peso)</option>
+                  <option value="subsidio">Frete 100% Subsidiado pela Temu (Campanha / Isenção ao Vendedor)</option>
+                  <option value="proprio">Logística Própria (Correios / Transportadora Própria)</option>
+                </select>
+              </div>
+
+              {temuLogistica === 'integrada' ? (
+                <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                  <label>Faixa de Peso do Pacote (Tabela de Envios Locais)</label>
+                  <select className="select-input" value={temuFreteIdx} onChange={e => setTemuFreteIdx(Number(e.target.value))}>
+                    {TEMU_FRETE.map((f, i) => (
+                      <option key={i} value={i}>{f.label} — {formatBRL(f.valor)}</option>
+                    ))}
+                  </select>
+                </div>
+              ) : temuLogistica === 'proprio' ? (
+                <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                  <label>Custo Médio de Envio Próprio (R$)</label>
+                  <FormattedInput type="currency" id="temuFreteCustom" value={temuFreteCustom}
+                    onChange={e => setTemuFreteCustom(e.target.value)}
+                    placeholder="Ex: 16,00" />
+                </div>
+              ) : null}
+
+              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                <label>Provisão p/ Devoluções e Reembolsos Rigorosos Temu (%)</label>
+                <FormattedInput type="decimal" id="temuDevolucao" value={temuDevolucao}
+                  onChange={e => setTemuDevolucao(e.target.value)}
+                  placeholder="Recomendado: 2,0% a 5,0%" />
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.2rem', display: 'block' }}>
+                  🛡️ A Temu possui política de reembolso muito ágil ao consumidor. Recomenda-se provisionar margem.
+                </span>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                <label>Cupom da Loja / Campanha Promocional (%)</label>
+                <FormattedInput type="decimal" id="temuCupom" value={temuCupom}
+                  onChange={e => setTemuCupom(e.target.value)}
+                  placeholder="Ex: 5,0" />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: '0.75rem' }}>
+                <label>Temu Ads / Tráfego Patrocinado Interno (%)</label>
+                <FormattedInput type="decimal" id="temuAds" value={temuAds}
+                  onChange={e => setTemuAds(e.target.value)}
+                  placeholder="Ex: 8,0" />
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.65rem 0.85rem', background: 'rgba(255,255,255,0.03)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--border-subtle)' }}>
+                  <input type="checkbox" id="temu_isencao" checked={temuIsencao} onChange={e => setTemuIsencao(e.target.checked)} style={{ width: 16, height: 16, cursor: 'pointer' }} />
+                  <label htmlFor="temu_isencao" style={{ fontSize: '0.85rem', cursor: 'pointer', margin: 0 }}>
+                    Incentivo de Lançamento Novos Sellers Temu (0% de Comissão)
+                  </label>
+                </div>
+              </div>
+            </div>
           ) : (
             <div className="card">
               <div className="card-header">
@@ -1250,6 +1436,46 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
                     <div className="dre-row" style={{ color: 'var(--danger)' }}>
                       <span>(−) Afiliados Shein ({parseBRL(sheinAfiliado)}%):</span>
                       <span>− {formatBRL(res.valorAfil)}</span>
+                    </div>
+                  )}
+                </>
+              ) : mp === 'temu' ? (
+                <>
+                  <div className="dre-row" style={{ color: 'var(--danger)' }}>
+                    <span>(−) Comissão Temu ({res.pctComissao}%):</span>
+                    <span>− {formatBRL(res.valorComissao)}</span>
+                  </div>
+                  <div className="dre-row" style={{ color: 'var(--text-muted)' }}>
+                    <span>(−) Tarifa Fixa por Item:</span>
+                    <span style={{ color: 'var(--success)' }}>R$ 0,00 (Isento)</span>
+                  </div>
+                  {res.custoFrete > 0 ? (
+                    <div className="dre-row" style={{ color: 'var(--danger)' }}>
+                      <span>(−) Envio Local Temu ({temuLogistica === 'proprio' ? 'Próprio' : 'Integrado'}):</span>
+                      <span>− {formatBRL(res.custoFrete)}</span>
+                    </div>
+                  ) : (
+                    <div className="dre-row" style={{ color: 'var(--text-muted)' }}>
+                      <span>Frete ao Vendedor:</span>
+                      <span style={{ color: 'var(--success)' }}>R$ 0,00 (100% Subsidiado)</span>
+                    </div>
+                  )}
+                  {res.valorDevolucao > 0 && (
+                    <div className="dre-row" style={{ color: 'var(--danger)' }}>
+                      <span>(−) Provisão Devoluções/Reembolso ({parseBRL(temuDevolucao)}%):</span>
+                      <span>− {formatBRL(res.valorDevolucao)}</span>
+                    </div>
+                  )}
+                  {res.valorCupom > 0 && (
+                    <div className="dre-row" style={{ color: 'var(--danger)' }}>
+                      <span>(−) Cupom da Loja ({parseBRL(temuCupom)}%):</span>
+                      <span>− {formatBRL(res.valorCupom)}</span>
+                    </div>
+                  )}
+                  {res.valorAds > 0 && (
+                    <div className="dre-row" style={{ color: 'var(--danger)' }}>
+                      <span>(−) Temu Ads ({parseBRL(temuAds)}%):</span>
+                      <span>− {formatBRL(res.valorAds)}</span>
                     </div>
                   )}
                 </>

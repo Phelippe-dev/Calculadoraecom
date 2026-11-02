@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Zap, ShoppingBag, Video, Package, Shirt, Info, Truck, Users } from 'lucide-react';
+import { Zap, ShoppingBag, Video, Package, Shirt, Store, Info, Truck, Users } from 'lucide-react';
 import { 
   ML_CATEGORIAS, ML_FRETE_BASE, ML_REPUTACAO, 
   SHOPEE_FAIXAS, AMAZON_CATEGORIAS, AMAZON_FRETE_DBA, 
-  SHEIN_CATEGORIAS, SHEIN_FRETE, formatBRL 
+  SHEIN_CATEGORIAS, SHEIN_FRETE, TEMU_CATEGORIAS, TEMU_FRETE, formatBRL 
 } from './PricingCalculator';
 
 export default function RulesGuide() {
@@ -17,9 +17,9 @@ export default function RulesGuide() {
           <div>
             <span className="badge badge-success">CENTRAL DE AUDITORIA &amp; TARIFAS 2026</span>
             <h2 style={{ marginTop: '0.4rem' }}>Guia Oficial de Taxas, Comissões e Regras 2026</h2>
-            <p>Consulte as tabelas e regulamentos oficiais vigentes no Mercado Livre, Shopee, TikTok Shop, Amazon Brasil e Shein.</p>
+            <p>Consulte as tabelas e regulamentos oficiais vigentes no Mercado Livre, Shopee, TikTok Shop, Amazon Brasil, Shein e Temu.</p>
           </div>
-          <div className="segmented-control" style={{ maxWidth: '620px' }}>
+          <div className="segmented-control" style={{ maxWidth: '720px' }}>
             <button type="button" className={`seg-btn seg-btn-ml ${guideTab === 'ml' ? 'active' : ''}`} onClick={() => setGuideTab('ml')}>
               <Zap size={14} /> Mercado Livre
             </button>
@@ -34,6 +34,9 @@ export default function RulesGuide() {
             </button>
             <button type="button" className={`seg-btn seg-btn-shein ${guideTab === 'shein' ? 'active' : ''}`} onClick={() => setGuideTab('shein')}>
               <Shirt size={14} /> Shein
+            </button>
+            <button type="button" className={`seg-btn seg-btn-temu ${guideTab === 'temu' ? 'active' : ''}`} onClick={() => setGuideTab('temu')}>
+              <Store size={14} /> Temu
             </button>
           </div>
         </div>
@@ -393,6 +396,77 @@ export default function RulesGuide() {
                     <tr key={idx} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                       <td style={{ padding: '0.6rem', fontWeight: 600 }}>{cat.label}</td>
                       <td style={{ padding: '0.6rem', color: 'var(--shein-pink)', fontWeight: 700 }}>{cat.comissao}%</td>
+                      <td style={{ padding: '0.6rem', color: 'var(--success)', fontWeight: 600 }}>R$ 0,00 (Isento)</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* GUIA TEMU BRASIL */}
+      {guideTab === 'temu' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <div className="card" style={{ borderLeft: '4px solid var(--temu-orange)' }}>
+            <h3 style={{ color: 'var(--temu-orange)', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Store size={18} /> Guia Oficial de Vendedores Locais Temu Brasil 2026 (Local-to-Local)
+            </h3>
+            <div style={{ fontSize: '0.88rem', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+              <p>• <strong>Programa de Vendedores Locais:</strong> A Temu expandiu oficialmente para vendedores nacionais com estoque no Brasil (modelo local para local). Requer <strong>CNPJ ativo</strong> (incluindo MEI, EI, SLU e LTDA), emissão de NF-e e conta bancária PJ para repasses.</p>
+              <p>• <strong>Sem Taxa Fixa por Item Vendido:</strong> A Temu <strong>não cobra taxa fixa por unidade vendida</strong> e <strong>não cobra mensalidade</strong> para criação ou manutenção da loja no Seller Center!</p>
+              <p>• <strong>Comissão por Categoria:</strong> As alíquotas oficiais variam entre <strong>10% e 15%</strong> (ex: 15% para Moda e Vestuário, 10% para Eletrônicos e Acessórios, e 12% para Casa e Utilidades).</p>
+              <p>• <strong>Incentivo Oficial de Lançamento (0% de Comissão):</strong> Novos sellers locais contam com campanhas promocionais de atração agressivas oferecendo <strong>0% de comissão</strong> nas vendas iniciais para acelerar a validação de sortimento no canal.</p>
+              <p>• <strong>Modelo de Preço Base do Vendedor:</strong> O vendedor estipula o seu Preço Base (quanto precisa receber líquido após custo, embalagem e imposto), e a plataforma gerencia estratégias de vitrine e cupons ao consumidor.</p>
+              <p>• <strong>Logística Local &amp; Frete:</strong> Despacho via transportadoras parceiras integradas credenciadas ou contratos próprios de coleta, com opções frequentes de frete 100% subsidiado pela Temu para alavancar a taxa de conversão.</p>
+              <p>• <strong>Atenção Crucial ao Pós-Venda:</strong> A política de garantia e reembolso da Temu ao consumidor é extremamente ágil e rigorosa. Especialistas recomendam reservar uma provisão de <strong>2% a 5%</strong> para reembolsos e devoluções na composição do preço.</p>
+            </div>
+          </div>
+
+          <div className="card">
+            <h3 style={{ marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Truck size={18} style={{ color: 'var(--temu-orange)' }} />
+              Tabela de Envio Integrado Temu Brasil por Faixa de Peso
+            </h3>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--border-subtle)', color: 'var(--text-muted)', textAlign: 'left' }}>
+                    <th style={{ padding: '0.6rem' }}>Faixa de Peso</th>
+                    <th style={{ padding: '0.6rem' }}>Custo Médio de Envio Local</th>
+                    <th style={{ padding: '0.6rem' }}>Condições de Coleta &amp; Envio</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {TEMU_FRETE.map((f, idx) => (
+                    <tr key={idx} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                      <td style={{ padding: '0.6rem', fontWeight: 700, color: 'var(--text-primary)' }}>{f.label}</td>
+                      <td style={{ padding: '0.6rem', color: 'var(--temu-orange)', fontWeight: 700 }}>{formatBRL(f.valor)}</td>
+                      <td style={{ padding: '0.6rem', color: 'var(--text-secondary)' }}>Transportadora Parceira Integrada Temu ou Ponto de Coleta</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className="card">
+            <h3 style={{ marginBottom: '0.75rem' }}>Comissões Oficiais por Categoria Temu Brasil</h3>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+                <thead>
+                  <tr style={{ borderBottom: '1px solid var(--border-subtle)', color: 'var(--text-muted)', textAlign: 'left' }}>
+                    <th style={{ padding: '0.6rem' }}>Categoria</th>
+                    <th style={{ padding: '0.6rem' }}>Comissão Oficial (%)</th>
+                    <th style={{ padding: '0.6rem' }}>Tarifa Fixa por Item</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {TEMU_CATEGORIAS.map((cat, idx) => (
+                    <tr key={idx} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                      <td style={{ padding: '0.6rem', fontWeight: 600 }}>{cat.label}</td>
+                      <td style={{ padding: '0.6rem', color: 'var(--temu-orange)', fontWeight: 700 }}>{cat.comissao}%</td>
                       <td style={{ padding: '0.6rem', color: 'var(--success)', fontWeight: 600 }}>R$ 0,00 (Isento)</td>
                     </tr>
                   ))}

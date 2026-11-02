@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bookmark, Trash2, FileSpreadsheet, Printer, X, Zap, ShoppingBag, Video, Package, Shirt } from 'lucide-react';
+import { Bookmark, Trash2, FileSpreadsheet, Printer, X, Zap, ShoppingBag, Video, Package, Shirt, Store } from 'lucide-react';
 import { formatBRL, formatPct } from './PricingCalculator';
 
 export default function SavedSimulationsModal({ isOpen, onClose, savedList, onDeleteSimulation, onClearAll }) {
@@ -12,6 +12,7 @@ export default function SavedSimulationsModal({ isOpen, onClose, savedList, onDe
     
     const rows = savedList.map(item => {
       const mpName = 
+        item.marketplace === 'temu' ? 'Temu Brasil' :
         item.marketplace === 'amazon' ? 'Amazon Brasil' :
         item.marketplace === 'shein' ? 'Shein Brasil' :
         item.marketplace === 'shopee' ? 'Shopee' :
@@ -46,6 +47,7 @@ export default function SavedSimulationsModal({ isOpen, onClose, savedList, onDe
   };
 
   const getMpBadge = (mp) => {
+    if (mp === 'temu') return <span className="badge badge-temu"><Store size={11} /> Temu</span>;
     if (mp === 'amazon') return <span className="badge badge-amazon"><Package size={11} /> Amazon</span>;
     if (mp === 'shein') return <span className="badge badge-shein"><Shirt size={11} /> Shein</span>;
     if (mp === 'shopee') return <span className="badge badge-shopee"><ShoppingBag size={11} /> Shopee</span>;
