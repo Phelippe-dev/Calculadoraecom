@@ -477,29 +477,7 @@ export default function RulesGuide() {
         </div>
       )}
 
-      {/* Banner de Consultoria e Sistemas Sob Medida Gravity Tech */}
-      <div className="card no-print" style={{ marginTop: '1.25rem', borderLeft: '4px solid #A855F7', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', background: 'rgba(168, 85, 247, 0.06)' }}>
-        <div>
-          <div style={{ fontSize: '0.74rem', fontWeight: 700, color: '#C084FC', textTransform: 'uppercase' }}>
-            Parceria Comercial &amp; Desenvolvimento Sob Medida
-          </div>
-          <div style={{ fontSize: '0.96rem', fontWeight: 700, marginTop: '0.2rem', color: 'var(--text-primary)' }}>
-            Quer automatizar a precificação ou integrar seus sistemas e ERPs (Bling, Tiny, etc.)?
-          </div>
-          <div style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
-            A <strong>Gravity Tech</strong> desenvolve sistemas web, dashboards gerenciais e integrações sob medida para o seu e-commerce.
-          </div>
-        </div>
-        <a 
-          href="https://gravitytech.web.app/#contato" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="btn btn-primary"
-          style={{ fontSize: '0.82rem', padding: '0.55rem 1.1rem', textDecoration: 'none', whiteSpace: 'nowrap' }}
-        >
-          Falar com a Gravity Tech ↗
-        </a>
-      </div>
+
     </div>
   );
 }
