@@ -60,7 +60,7 @@ export default function MarketplaceComparator() {
       totalCustos,
       lucro,
       margemPct,
-      detalheTaxas: `Comissão ${pctComissao}% + ${taxaFixa > 0 ? `Taxa ${formatBRL(taxaFixa)}` : `Frete ${formatBRL(custoFrete)}`}`
+      detalheTaxas: `Comissão ${pctComissao}% + ${taxaFixa > 0 ? `Custo Operacional ${formatBRL(taxaFixa)}` : `Frete ${formatBRL(custoFrete)}`}`
     };
   };
 

@@ -54,7 +54,7 @@ export default function RulesGuide() {
               <p>• <strong>Reajuste de Frete (Mercado Envios):</strong> Atualização na tabela oficial para pacotes acima e abaixo de R$ 19,00. O frete agora varia com base no peso real, cubagem (dimensões da embalagem) e distância da entrega.</p>
               <p>• <strong>Envios Flex Dinâmico:</strong> Fim da tarifa/bônus fixo único. O custo do Flex passa a ser calculado individualmente considerando tamanho da caixa, peso e raio de distância.</p>
               <p>• <strong>Reajuste no Mercado Envios Full:</strong> Novas tabelas de armazenagem diária, coletas e regras mais rígidas para produtos sem conformidade de estoque.</p>
-              <p>• <strong>Tarifa Operacional por Unidade (&lt; R$ 79,00):</strong> Cobrança operacional proporcional à cubagem em substituição à antiga taxa fixa fixa linear por unidade.</p>
+              <p>• <strong>Custo Operacional de Envio (&lt; R$ 79,00):</strong> Extinção definitiva da antiga taxa fixa linear por unidade. Cobrança de custo operacional variável proporcional ao peso real e às dimensões da embalagem (cubagem).</p>
               <p style={{ marginTop: '0.2rem', color: 'var(--text-primary)', fontWeight: 600 }}>
                 📌 <strong>Ação Recomendada:</strong> Revise as dimensões (A x L x C) e o peso cadastrado de todos os seus SKUs no painel do Mercado Livre para evitar acréscimos indevidos por estimativa de cubagem.
               </p>
@@ -67,7 +67,7 @@ export default function RulesGuide() {
             </h3>
             <div style={{ fontSize: '0.85rem', color: 'var(--text-primary)', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
               <p>• <strong>Clássico vs. Premium:</strong> Clássico (10% a 14% de comissão). Premium (15% a 19% com parcelamento em até 12x sem juros).</p>
-              <p>• <strong>Produtos &lt; R$ 79,00:</strong> Sem frete grátis obrigatório. Taxa de gestão logística de 32% sobre o frete base.</p>
+              <p>• <strong>Produtos &lt; R$ 79,00:</strong> Sem frete grátis obrigatório ao comprador. O vendedor arca com o Custo Operacional de Envio proporcional à cubagem (32% sobre a tabela de frete base).</p>
               <p>• <strong>Produtos &ge; R$ 79,00:</strong> Frete grátis obrigatório ao comprador, com desconto de até 70% conforme a reputação do vendedor.</p>
               <p>• <strong>Desconto Full:</strong> Vendedores no Mercado Envios Full recebem 8% de desconto extra no custo do frete grátis.</p>
               <p>• <strong>Programa de Afiliados:</strong> Comissão adicional de 3% a 7% para vendas via parceiros afiliados.</p>
@@ -86,7 +86,7 @@ export default function RulesGuide() {
                   <tr style={{ borderBottom: '1px solid var(--border-subtle)', color: 'var(--text-muted)', textAlign: 'left' }}>
                     <th style={{ padding: '0.6rem' }}>Faixa de Peso</th>
                     <th style={{ padding: '0.6rem' }}>Frete Base Bruto</th>
-                    <th style={{ padding: '0.6rem' }}>Tarifa Fixa (&lt; R$ 79,00)</th>
+                    <th style={{ padding: '0.6rem' }}>Custo Operacional (&lt; R$ 79,00)</th>
                     <th style={{ padding: '0.6rem' }}>Com 40% Off (Verde Escuro)</th>
                     <th style={{ padding: '0.6rem' }}>Com 70% Off (Platinum/Gold)</th>
                   </tr>

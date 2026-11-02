@@ -1143,8 +1143,22 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
               <div className="card-header">
                 <h3>⚙️ Configurações Mercado Livre</h3>
                 <p style={{ fontSize: '0.78rem', marginTop: '0.2rem', color: 'var(--text-muted)' }}>
-                  Tabela Oficial de Comissões e Frete Obrigatório por Reputação
+                  Tabela Oficial de Comissões, Reputação e Custo Operacional de Envio 2026
                 </p>
+              </div>
+
+              <div style={{ padding: '0.75rem', background: 'var(--ml-yellow-bg)', border: '1px solid var(--ml-yellow-border)', borderRadius: 'var(--radius-sm)', marginBottom: '0.85rem' }}>
+                <div style={{ fontSize: '0.78rem', color: '#EAB308', fontWeight: 700, marginBottom: '0.3rem' }}>
+                  REGRA APLICADA PARA O PREÇO DE R$ {numPreco.toFixed(2)}
+                </div>
+                <div style={{ fontWeight: 600, fontSize: '0.85rem' }}>
+                  Comissão: {ml.pctComissao}% • {numPreco < 79.00 ? `Custo Operacional de Envio (< R$ 79): ${formatBRL(ml.taxaFixa)} (Calculado por Cubagem)` : `Frete Grátis Obrigatório: ${formatBRL(ml.custoFrete)}`}
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>
+                  {numPreco < 79.00 
+                    ? '📌 Fim da antiga taxa fixa: o Mercado Livre cobra o Custo Operacional proporcional ao peso e dimensões (32% do frete base).'
+                    : `Desconto no frete grátis por reputação: ${ml.repRow.descPct}%${mlModal === 'full' ? ' (+8% Bônus Full CD)' : ''}`}
+                </div>
               </div>
 
               <div className="form-group" style={{ marginBottom: '0.75rem' }}>
@@ -1551,7 +1565,7 @@ export default function PricingCalculator({ currentMarketplace, onSaveSimulation
                   </div>
                   {res.taxaFixa > 0 && (
                     <div className="dre-row" style={{ color: 'var(--danger)' }}>
-                      <span>(−) Tarifa Fixa Gestão Logística (&lt; R$79):</span>
+                      <span>(−) Custo Operacional de Envio (&lt; R$79):</span>
                       <span>− {formatBRL(res.taxaFixa)}</span>
                     </div>
                   )}
